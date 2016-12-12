@@ -5,33 +5,23 @@ module WPBSolver
       @measure_number = measure_number
     end
 
-    def solve
+    def solve_simple(number_of_solutions=1)
       @count = 0
       @results = []
-      find_solution([BallSet.new(@ball_number)], @measure_number, [])
-      @results.count
-    end
-
-    def counter
-      @count += 1
-      if (@count % 100000) == 0
-        puts "Count: #{@count}, results: #{@results.count}"
+      find_solution_simple([Balls.new(@ball_number)], @measure_number, [], number_of_solutions)
+      (0...@results.count).each do |number|
+        puts " -- Solution #{number+1} --"
+        display(number)
       end
     end
 
-    def find_solution(state_set, max_measures, all_measures)
-      if state_set.map(&:case_number).max > (3 ** max_measures)
-        #puts "too many cases for remaining measures"
-        #puts "available: #{3 ** max_measures}"
-        #state_set.each do |bs|
-        #  print "N: #{bs.case_number} - "
-        #  p bs
-        #end
-        return nil
+    def find_solution_simple(state_set, max_measures, all_measures, number_of_solutions)
+      if state_set.map(&:case_number).max > (Scale.number_of_outcomes ** max_measures)
+        return
       end
       puts "Measures: #{max_measures}, states: #{state_set.count}"
-      n = state_set.first.balls.size
-      ids = state_set.first.balls.map(&:id)
+      n = state_set.first.size
+      ids = state_set.first.ids
       (1..(n/2)).each do |level|
         puts "Get #{2*level} balls"
         ids.combination(level*2).each do |subset|
@@ -41,14 +31,15 @@ module WPBSolver
             right = subset - left
             reverse << right
             new_state_set = state_set.map do |bs|
-              Balance.measure(bs, left, right)
+              Scale.measure(bs, left, right)
             end.flatten
             if new_state_set.all? {|bs| bs.success? }
               @results << all_measures+[{left: left, right: right, set: new_state_set}]
+              return if @results.count >= number_of_solutions
             elsif max_measures > 1
-              find_solution(new_state_set, max_measures-1, all_measures+[{left: left, right: right}])
+              find_solution_simple(new_state_set, max_measures-1, all_measures+[{left: left, right: right}], number_of_solutions)
+              return if @results.count >= number_of_solutions
             end
-            counter if max_measures == 1
           end
         end
       end
