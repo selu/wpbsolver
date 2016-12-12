@@ -1,8 +1,12 @@
 # WPBSolver
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/wpbsolver`. To experiment with that code, run `bin/console` for an interactive prompt.
+This little program is created to find non-deterministic solutions for [Weighing Pool Balls Puzzle](https://www.mathsisfun.com/pool_balls.html).
+As of now it can be used only by running `bin/console`:
 
-TODO: Delete this and the text above, and describe your gem
+```ruby
+p = WPBSolver::Problem.new(12,3)
+p.solve
+```
 
 ## Installation
 
