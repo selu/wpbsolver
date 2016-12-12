@@ -1,4 +1,4 @@
-module Solver
+module WPBSolver
   class Ball
     EQUAL = 1
     HEAVY = 2

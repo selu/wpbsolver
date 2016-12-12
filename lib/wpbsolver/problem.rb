@@ -1,4 +1,4 @@
-module Solver
+module WPBSolver
   class Problem
     def initialize(ball_number, measure_number)
       @ball_number = ball_number

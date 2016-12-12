@@ -1,6 +1,6 @@
-require "solver/version"
+require "wpbsolver/version"
 
-module Solver
+module WPBSolver
   def self.measure_number(ball_set)
     n = ball_set.balls.size
     (1..(n/2)).inject(0) do |s,k|
@@ -16,7 +16,7 @@ module Solver
   end
 end
 
-require "solver/ball"
-require "solver/ball_set"
-require "solver/balance"
-require "solver/problem"
+require "wpbsolver/ball"
+require "wpbsolver/ball_set"
+require "wpbsolver/balance"
+require "wpbsolver/problem"

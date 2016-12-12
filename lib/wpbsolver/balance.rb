@@ -1,4 +1,4 @@
-module Solver
+module WPBSolver
   class Balance
     def self.measure(ball_set, left_arm, right_arm)
       [

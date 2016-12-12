@@ -1,4 +1,4 @@
-module Solver
+module WPBSolver
   class BallSet
     attr_reader :balls
     def initialize(count)

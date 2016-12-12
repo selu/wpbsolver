@@ -1,17 +1,17 @@
 # coding: utf-8
 lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require 'solver/version'
+require 'wpbsolver/version'
 
 Gem::Specification.new do |spec|
-  spec.name          = "solver"
-  spec.version       = Solver::VERSION
+  spec.name          = "wpbsolver"
+  spec.version       = WPBSolver::VERSION
   spec.authors       = ["Szabolcs Seláf"]
   spec.email         = ["selu@selu.org"]
 
-  spec.summary       = %q{}
-  spec.description   = %q{}
-  spec.homepage      = ""
+  spec.summary       = %q{Weighing Pool Balls Puzzle Solver}
+  spec.description   = %q{Weighing Pool Balls Puzzle Solver}
+  spec.homepage      = "https://github.com/selu/wpbsolver"
 
   # Prevent pushing this gem to RubyGems.org. To allow pushes either set the 'allowed_push_host'
   # to allow pushing to a single host or delete this section to allow pushing to any host.
