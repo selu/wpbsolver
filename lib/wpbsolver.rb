@@ -14,8 +14,18 @@ module WPBSolver
     return 1 if n == 0
     nCr(n-1,r) + nCr(n-1,r-1)
   end
+
+  def self.all_measures(ball_number)
+    m = Measure.new(ball_number)
+    result = []
+    begin
+      result << [m.left, m.right]
+    end while m.next
+    result
+  end
 end
 
 require "wpbsolver/balls"
+require "wpbsolver/measure"
 require "wpbsolver/scale"
 require "wpbsolver/problem"

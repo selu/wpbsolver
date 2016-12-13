@@ -64,5 +64,33 @@ module WPBSolver
       end
       nil
     end
+
+    def solve_all
+      measures = WPBSolver.all_measures(@ball_number)
+      results = []
+      start_set = Scale.measure(Balls.new(@ball_number), measures[0][0], measures[0][1])
+      (1...measures.size).each do |level2|
+        level2_set = start_set.map do |balls|
+          Scale.measure(balls, measures[level2][0], measures[level2][1])
+        end.flatten
+        next if level2_set.map(&:case_number).max > (Scale.number_of_outcomes)
+        (level2...measures.size).each do |level3|
+          level3_set = level2_set.map do |balls|
+            Scale.measure(balls, measures[level3][0], measures[level3][1])
+          end.flatten
+          if level3_set.all? {|bs| bs.success?}
+            results << [
+              measures[0],
+              measures[level2],
+              measures[level3]
+            ]
+          end
+        end
+        if (level2%100) == 0
+          puts "Level2: #{level2}, results: #{results.size}"
+        end
+      end
+      puts "Solutions: #{results.size}"
+    end
   end
 end
