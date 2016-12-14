@@ -66,31 +66,43 @@ module WPBSolver
     end
 
     def solve_all
-      measures = WPBSolver.all_measures(@ball_number)
-      results = []
-      start_set = Scale.measure(Balls.new(@ball_number), measures[0][0], measures[0][1])
-      (1...measures.size).each do |level2|
-        level2_set = start_set.map do |balls|
-          Scale.measure(balls, measures[level2][0], measures[level2][1])
-        end.flatten
-        next if level2_set.map(&:case_number).max > (Scale.number_of_outcomes)
-        (level2...measures.size).each do |level3|
-          level3_set = level2_set.map do |balls|
-            Scale.measure(balls, measures[level3][0], measures[level3][1])
+      @results = []
+      @count = 0
+      [1, 2, 0].                       # 1: left, 2: right, 0: no
+      repeated_permutation(@measure_number). # possible measures of a ball
+      select{|series| series != [0,0,0]}. # every ball should be measures at once
+      combination(@ball_number).       # choosing 12 different measures: 9657700
+      select do |mt|                   # keep only where put 4 balls onto both arms
+        mt.reduce([0]*3*@measure_number) do |r,s|
+          s.each_with_index{|v,idx| r[v+3*idx] += 1}
+          r
+        end.all? {|v| v == (@ball_number/3)}
+      end.each do |mt|
+        mt = mt.transpose
+        @count += 1
+        states = [Balls.new(@ball_number)]
+        measures = []
+        @measure_number.times do |level|
+          left = []
+          right = []
+          mt[level].each_with_index do |pos,ball|
+            if pos == 1
+              left << ball+1
+            elsif pos == 2
+              right << ball+1
+            end
+          end
+          measures << {left: left, right: right}
+          states = states.map do |balls|
+            Scale.measure(balls, left, right)
           end.flatten
-          if level3_set.all? {|bs| bs.success?}
-            results << [
-              measures[0],
-              measures[level2],
-              measures[level3]
-            ]
+          if states.all? {|balls| balls.success?}
+            measures.last[:set] = states
+            @results << measures
           end
         end
-        if (level2%100) == 0
-          puts "Level2: #{level2}, results: #{results.size}"
-        end
       end
-      puts "Solutions: #{results.size}"
+      @results
     end
   end
 end
