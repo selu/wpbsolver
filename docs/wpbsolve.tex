@@ -154,73 +154,78 @@ However this algorithm is almost a brute force, found the first solution within 
   equal/.style      = {draw=gray, ->},
   grow cyclic, thick,
   level/.style =    { level distance=2cm },
+  long2/.style      =  { level distance=2.7827cm },
+  long3/.style      =  { level distance=2.3739cm },
   level 1/.style =  { sibling angle=120 },
-  level 2/.style =  { sibling angle=60 },
-  level 3/.style =  { sibling angle=30 }
+  level 2/.style =  { sibling angle=67.5157 },
+  level 3/.style =  { sibling angle=40.8554 },
+  lightrot/.style   = { rotate=27.5157 },
+  heavyrot/.style   = { rotate=-27.5157 }
 ]
 \fill[green!30] circle(0.5cm);
 \fill[even odd rule, green!20] circle(2.5cm) circle(1.5cm);
-\fill[even odd rule, green!10] circle(4.3cm) circle(3.3cm);
+\fill[even odd rule, green!10] circle(4.5cm) circle(3.5cm);
+\fill[even odd rule, yellow!30] circle(6.5cm) circle(5.5cm);
 \node [choose] (l1) {}
   child { node [choose] (l13) {}
-    child { node [choose] (l133) {}
-      child { node [light] {1} edge from parent [lighter] }
-      child { node [light] {3} edge from parent [equal] }
-      child { node [light] {2} edge from parent [heavier] }
+    child [long2] { node [choose] (l133) {}
+      child [lightrot,long3] { node [light] {1} edge from parent [lighter] }
+      child [lightrot] { node [light] {3} edge from parent [equal] }
+      child [lightrot,long3] { node [light] {2} edge from parent [heavier] }
       edge from parent [lighter]
     }
     child { node [choose] (l132) {} 
-      child { node [heavy] {7} edge from parent [lighter] }
+      child [long3] { node [heavy] {7} edge from parent [lighter] }
       child { node [heavy] {8} edge from parent [equal] }
-      child { node [heavy] {6} edge from parent [heavier] }
+      child [long3] { node [heavy] {6} edge from parent [heavier] }
       edge from parent [equal]
     }
-    child { node [choose] (l131) {} 
-      child { node [light] {4} edge from parent [lighter] }
-      child { node [heavy] {5} edge from parent [equal] }
-      child { node [nothing] {} edge from parent [heavier] }
+    child [long2] { node [choose] (l131) {} 
+      child [heavyrot,long3] { node [light] {4} edge from parent [lighter] }
+      child [heavyrot] { node [heavy] {5} edge from parent [equal] }
+      child [heavyrot,long3] { node [nothing] {} edge from parent [heavier] }
       edge from parent [heavier]
     }
     edge from parent [lighter]
   }
   child { node [choose] (l12) {}
-    child { node [choose] (l123) {} 
-      child { node [heavy] {10} edge from parent [lighter] }
-      child { node [heavy] {11} edge from parent [equal] }
-      child { node [heavy] {9} edge from parent [heavier] }
+    child [long2] { node [choose] (l123) {} 
+      child [lightrot,long3] { node [heavy] {10} edge from parent [lighter] }
+      child [lightrot] { node [heavy] {11} edge from parent [equal] }
+      child [lightrot,long3] { node [heavy] {9} edge from parent [heavier] }
       edge from parent [lighter]
     }
     child { node [choose] (l122) {} 
-      child { node [heavy] {12} edge from parent [lighter] }
+      child [long3] { node [heavy] {12} edge from parent [lighter] }
       child { node [nothing] {} edge from parent [equal] }
-      child { node [light] {12} edge from parent [heavier] }
+      child [long3] { node [light] {12} edge from parent [heavier] }
       edge from parent [equal]
     }
-    child { node [choose] (l121) {} 
-      child { node [light] {9} edge from parent [lighter] }
-      child { node [light] {11} edge from parent [equal] }
-      child { node [light] {10} edge from parent [heavier] }
+    child [long2] { node [choose] (l121) {} 
+      child [heavyrot,long3] { node [light] {9} edge from parent [lighter] }
+      child [heavyrot] { node [light] {11} edge from parent [equal] }
+      child [heavyrot,long3] { node [light] {10} edge from parent [heavier] }
       edge from parent [heavier]
     }
     edge from parent [equal]
   }
   child { node [choose] (l11) {}
-    child { node [choose] (l113) {}
-      child { node [nothing] {} edge from parent [lighter] }
-      child { node [light] {5} edge from parent [equal] }
-      child { node [heavy] {4} edge from parent [heavier] }
+    child [long2] { node [choose] (l113) {}
+      child [lightrot,long3] { node [nothing] {} edge from parent [lighter] }
+      child [lightrot] { node [light] {5} edge from parent [equal] }
+      child [lightrot,long3] { node [heavy] {4} edge from parent [heavier] }
       edge from parent [lighter]
     }
     child { node [choose] (l112) {}
-      child { node [light] {6} edge from parent [lighter] }
+      child [long3] { node [light] {6} edge from parent [lighter] }
       child { node [light] {8} edge from parent [equal] }
-      child { node [light] {7} edge from parent [heavier] }
+      child [long3] { node [light] {7} edge from parent [heavier] }
       edge from parent [equal]
     }
-    child { node [choose] (l111) {}
-      child { node [heavy] {2} edge from parent [lighter] }
-      child { node [heavy] {3} edge from parent [equal] }
-      child { node [heavy] {1} edge from parent [heavier] }
+    child [long2] { node [choose] (l111) {}
+      child [heavyrot,long3] { node [heavy] {2} edge from parent [lighter] }
+      child [heavyrot] { node [heavy] {3} edge from parent [equal] }
+      child [heavyrot,long3] { node [heavy] {1} edge from parent [heavier] }
       edge from parent [heavier]
     }
     edge from parent [heavier]
