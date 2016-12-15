@@ -1,32 +1,44 @@
 # Weighing Pool Balls Puzzle Solver
 
 This little program is created to find determined solutions for [Weighing Pool Balls Puzzle](https://www.mathsisfun.com/pool_balls.html).
-As of now it can be used only by running `bin/console`:
-
-```ruby
-p = WPBSolver::Problem.new(12,3)
-p.solve
-```
 
 ## Installation
 
-Add this line to your application's Gemfile:
+First of all you have to install ruby (if you don't have it already) using [rbenv](https://github.com/fesplugas/rbenv-installer) on Linux or [rubyinstaller] on Windows. Or you can use [jruby](http://jruby.org/) on both Linux and Windows.
 
-```ruby
-gem 'wpbsolver'
+If you start with rbenv, you need to install the latest ruby with `rbenv install 2.3.3` or even it can be used to instal jruby with `rbenv install jruby-9.1.6.0`, then `rbenv global 2.3.3` set it to the default ruby.
+
+You will need bundler and it's not installed automatically: `gem install bundler`.
+
+Finally download wpbsolver and install dependencies:
+
 ```
-
-And then execute:
-
-    $ bundle
-
-Or install it yourself as:
-
-    $ gem install wpbsolver
+git clone https://github.com/selu/wpbsolver.git
+cd wpbsolver
+bundle install
+```
 
 ## Usage
 
-TODO: Write usage instructions here
+One way is to start `./bin/console` and run the following ruby codes:
+
+```ruby
+p = WPBSolver::Problem.new(12,3)  # start with 12 balls and 3
+                                  # measures
+p.solve_simple                    # find one solution with a simple
+                                  # algorithm
+p.solve_all                       # find all possible solutions
+                                  # it simply return with an array
+                                  # of solutions yet
+```
+
+The other way is to run same codes directly from ruby:
+
+```
+bundle exec ruby -rbundler/setup -rwpbsolver -e "WPBSolver::Problem.new(12,3).solve_simple"
+
+bundle exec ruby -rbundler/setup -rwpbsolver -e "puts WPBSolver::Problem.new(12,3).solve_all.count"
+```
 
 ## Development
 
@@ -37,4 +49,3 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 ## Contributing
 
 Bug reports and pull requests are welcome on GitHub at https://github.com/selu/wpbsolver.
-
