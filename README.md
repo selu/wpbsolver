@@ -1,6 +1,6 @@
-# WPBSolver
+# Weighing Pool Balls Puzzle Solver
 
-This little program is created to find non-deterministic solutions for [Weighing Pool Balls Puzzle](https://www.mathsisfun.com/pool_balls.html).
+This little program is created to find determined solutions for [Weighing Pool Balls Puzzle](https://www.mathsisfun.com/pool_balls.html).
 As of now it can be used only by running `bin/console`:
 
 ```ruby
