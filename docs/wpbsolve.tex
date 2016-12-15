@@ -54,6 +54,7 @@
 \usepackage[usenames,x11names,table]{xcolor}
 \usepackage{minted}
 \usepackage{tikz}
+\usetikzlibrary{trees}
 \usepackage{draftwatermark}
 \SetWatermarkScale{5}
 %%% END Article customizations
@@ -142,40 +143,87 @@ However this algorithm is almost a brute force, found the first solution within 
 \caption{Measures}
 \end{table}
 
-\begin{tikzpicture}
-[
-  choose/.style     = {shape=rectangle, rounded corners,
-                       bottom color=gray!30, top color=white},
-  heavy/.style      = {shape=circle, color=red!30},
-  light/.style      = {shape=circle, color=blue!30},
-  edge from parent/.style = {draw, -latex},
-  grow = right,
-  level/.style =    { level distance=5em, sibling distance=20em/#1 }
+\begin{tikzpicture}[
+  ball/.style       = {shape=circle, top color=white, minimum size=0.5cm},
+  choose/.style     = {ball, bottom color=gray!30},
+  heavy/.style      = {ball, bottom color=red!30},
+  light/.style      = {ball, bottom color=blue!30},
+  nothing/.style    = {ball, bottom color=white, draw=magenta},
+  heavier/.style    = {draw=red, ->},
+  lighter/.style    = {draw=blue, ->},
+  equal/.style      = {draw=gray, ->},
+  grow cyclic, thick,
+  level/.style =    { level distance=2cm },
+  level 1/.style =  { sibling angle=120 },
+  level 2/.style =  { sibling angle=60 },
+  level 3/.style =  { sibling angle=30 }
 ]
-\node [choose] {M1}
-  child { node [choose] {M2}
-    child { node [choose] {M3}
-      child { node [heavy] {1} }
-      child { node [heavy] {3} }
-      child { node [heavy] {2} }
+\fill[green!30] circle(0.5cm);
+\fill[even odd rule, green!20] circle(2.5cm) circle(1.5cm);
+\fill[even odd rule, green!10] circle(4.3cm) circle(3.3cm);
+\node [choose] (l1) {}
+  child { node [choose] (l13) {}
+    child { node [choose] (l133) {}
+      child { node [light] {1} edge from parent [lighter] }
+      child { node [light] {3} edge from parent [equal] }
+      child { node [light] {2} edge from parent [heavier] }
+      edge from parent [lighter]
     }
-    child { node [choose] {M3} 
-      child { node [light] {7} }
-      child { node [light] {8} }
-      child { node [light] {6} }
+    child { node [choose] (l132) {} 
+      child { node [heavy] {7} edge from parent [lighter] }
+      child { node [heavy] {8} edge from parent [equal] }
+      child { node [heavy] {6} edge from parent [heavier] }
+      edge from parent [equal]
     }
-    child { node [choose] {M3} 
+    child { node [choose] (l131) {} 
+      child { node [light] {4} edge from parent [lighter] }
+      child { node [heavy] {5} edge from parent [equal] }
+      child { node [nothing] {} edge from parent [heavier] }
+      edge from parent [heavier]
     }
+    edge from parent [lighter]
   }
-  child { node [choose] {M2}
-    child { node [choose] {M3} }
-    child { node [choose] {M3} }
-    child { node [choose] {M3} }
+  child { node [choose] (l12) {}
+    child { node [choose] (l123) {} 
+      child { node [heavy] {10} edge from parent [lighter] }
+      child { node [heavy] {11} edge from parent [equal] }
+      child { node [heavy] {9} edge from parent [heavier] }
+      edge from parent [lighter]
+    }
+    child { node [choose] (l122) {} 
+      child { node [heavy] {12} edge from parent [lighter] }
+      child { node [nothing] {} edge from parent [equal] }
+      child { node [light] {12} edge from parent [heavier] }
+      edge from parent [equal]
+    }
+    child { node [choose] (l121) {} 
+      child { node [light] {9} edge from parent [lighter] }
+      child { node [light] {11} edge from parent [equal] }
+      child { node [light] {10} edge from parent [heavier] }
+      edge from parent [heavier]
+    }
+    edge from parent [equal]
   }
-  child { node [choose] {M2}
-    child { node [choose] {M3} }
-    child { node [choose] {M3} }
-    child { node [choose] {M3} }
+  child { node [choose] (l11) {}
+    child { node [choose] (l113) {}
+      child { node [nothing] {} edge from parent [lighter] }
+      child { node [light] {5} edge from parent [equal] }
+      child { node [heavy] {4} edge from parent [heavier] }
+      edge from parent [lighter]
+    }
+    child { node [choose] (l112) {}
+      child { node [light] {6} edge from parent [lighter] }
+      child { node [light] {8} edge from parent [equal] }
+      child { node [light] {7} edge from parent [heavier] }
+      edge from parent [equal]
+    }
+    child { node [choose] (l111) {}
+      child { node [heavy] {2} edge from parent [lighter] }
+      child { node [heavy] {3} edge from parent [equal] }
+      child { node [heavy] {1} edge from parent [heavier] }
+      edge from parent [heavier]
+    }
+    edge from parent [heavier]
   }
   ;
 \end{tikzpicture}
