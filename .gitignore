@@ -7,3 +7,8 @@
 /pkg/
 /spec/reports/
 /tmp/
+/docs/*.log
+/docs/*.out
+/docs/*.aux
+/docs/*.synctex*
+*.swp

@@ -51,23 +51,22 @@
 
 \usepackage{hyperref}
 \usepackage{mathtools}
-\usepackage{listings}
-
+\usepackage[usenames,x11names,table]{xcolor}
+\usepackage{minted}
+\usepackage{tikz}
+\usepackage{draftwatermark}
+\SetWatermarkScale{5}
 %%% END Article customizations
 
 %%% The "real" document content comes below...
 
 \title{Solve Weighing Pool Ball Puzzle}
-\author{Szabolcs Seláf}
+\author{Szabolcs Seláf \\ \texttt{selu@selu.org}}
 %\date{} % Activate to display a given date or no date (if empty),
          % otherwise the current date is printed 
 
 \begin{document}
 \maketitle
-\lstset{
-  language=Ruby,
-  basicstyle=\footnotesize\ttfamily
-}
 
 \section{Weighing Pool Ball Puzzle}
 
@@ -85,7 +84,7 @@ You have a set of balance scales which will give 3 possible readings:
 \item Left $<$ Right (ie Left and Right have equal weight, Left is Heavier, or Left is Lighter).
 \end{itemize}
 
-You have {\em only 3 chances} to weigh the balls in any combination using the scales.
+You have \emph{only 3 chances} to weigh the balls in any combination using the scales.
 Find which ball is the odd one and if it's heavier or lighter than the rest.
 
 \section{Find one solution}
@@ -101,19 +100,84 @@ All three measures can be one of the 36829 possible ones, so the number of all p
 
 Using information above we can generate possible measures one-by-one:
 
-\begin{lstlisting}
+\begin{minted}{ruby}
 ids = (1..12).to_a                          # array [1, 2, .., 12] for balls
 (1..6).each do |level|                      # how much balls to put on an arm
   ids.combination(level*2).each do |subset| # pick a combination for both arms
     reverse = []
     subset.combination(level).each do |left| # pick half of them for left arm
-      next if reverse.include?(left)         # go to next if reversed already checked
-      right = subset - left
+      next if reverse.include?(left)         # go to next if reversed already
+      right = subset - left                  # checked
       reverse << right
-\end{lstlisting}
+\end{minted}
 
-\subsection{A subsection}
+\subsection{Backtracking}
 
-More text.
+At start any of the 12 balls can be heavier or lighter than others, which means we have 24 possible results. Each measure has 3 possible outcomes, 3 measures could solve $3^3 = 27$ different cases. After the first measure the remaining two could solve only $3^2 = 9$ cases and of course, the last one could solve maximum 3 cases.
+
+The program uses this knowledge to give up, once there is a possible outcome of a measure with more different cases, than that can be eliminated by the remaining steps.
+
+\begin{minted}{ruby}
+if state_set.map(&:case_number).max > (Scale.number_of_outcomes ** max_measures)
+  return
+end
+\end{minted}
+
+\subsection{Result}
+
+However this algorithm is almost a brute force, found the first solution within some seconds.
+
+\begin{table}[ht]
+\begin{center}
+\begin{tabular}{|c|cccc|cccc|}
+  \hline
+  Number & \multicolumn{4}{c|}{Left arm} & \multicolumn{4}{c|}{Right arm} \\
+  \hline
+       1 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 \\
+       2 & 1 & 2 & 3 & 5 & 4 & 9 & 10 & 11 \\
+       3 & 1 & 4 & 6 & 9 & 2 & 7 & 10 & 12 \\
+  \hline
+\end{tabular}
+\end{center}
+\caption{Measures}
+\end{table}
+
+\begin{tikzpicture}
+[
+  choose/.style     = {shape=rectangle, rounded corners,
+                       bottom color=gray!30, top color=white},
+  heavy/.style      = {shape=circle, color=red!30},
+  light/.style      = {shape=circle, color=blue!30},
+  edge from parent/.style = {draw, -latex},
+  grow = right,
+  level/.style =    { level distance=5em, sibling distance=20em/#1 }
+]
+\node [choose] {M1}
+  child { node [choose] {M2}
+    child { node [choose] {M3}
+      child { node [heavy] {1} }
+      child { node [heavy] {3} }
+      child { node [heavy] {2} }
+    }
+    child { node [choose] {M3} 
+      child { node [light] {7} }
+      child { node [light] {8} }
+      child { node [light] {6} }
+    }
+    child { node [choose] {M3} 
+    }
+  }
+  child { node [choose] {M2}
+    child { node [choose] {M3} }
+    child { node [choose] {M3} }
+    child { node [choose] {M3} }
+  }
+  child { node [choose] {M2}
+    child { node [choose] {M3} }
+    child { node [choose] {M3} }
+    child { node [choose] {M3} }
+  }
+  ;
+\end{tikzpicture}
 
 \end{document}
