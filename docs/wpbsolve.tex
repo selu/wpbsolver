@@ -233,4 +233,31 @@ However this algorithm is almost a brute force, found the first solution within 
   ;
 \end{tikzpicture}
 
+\begin{table}[ht]
+\begin{center}
+\begin{tabular}{*{8}{c}}
+\cline{1-2} \cline{4-5} \cline{7-8}
+Measures & Result & & Measures & Result & & Measures & Result \\
+\cline{1-2} \cline{4-5} \cline{7-8}
+$>>>$ & $\uparrow 1$ & & $<>=$ & $\uparrow 5$ & & $=<>$ & $\uparrow 9$ \\
+$<<<$ & $\downarrow 1$ & & $><=$ & $\downarrow 5$ & & $=><$ & $\downarrow 9$ \\
+
+$>><$ & $\uparrow 2$ & & $<=>$ & $\uparrow 6$ & & $=<<$ & $\uparrow 10$ \\
+$<<>$ & $\downarrow 2$ & & $>=<$ & $\downarrow 6$ & & $=>>$ & $\downarrow 10$ \\
+
+$>>=$ & $\uparrow 3$ & & $<=<$ & $\uparrow 7$ & & $=<=$ & $\uparrow 11$ \\
+$<<=$ & $\downarrow 3$ & & $>=>$ & $\downarrow 7$ & & $=>=$ & $\downarrow 11$ \\
+
+$><>$ & $\uparrow 4$ & & $<==$ & $\uparrow 8$ & & $==<$ & $\uparrow 12$ \\
+$<><$ & $\downarrow 4$ & & $>==$ & $\downarrow 8$ & & $==>$ & $\downarrow 12$ \\
+
+$===$ & $\emptyset$ & & $><<$ & $\emptyset$ & & $<>>$ & $\emptyset$ \\
+\cline{1-2} \cline{4-5} \cline{7-8}
+\end{tabular}
+\end{center}
+\caption{Results}
+\end{table}
+
+\section{Find all solutions}
+
 \end{document}
