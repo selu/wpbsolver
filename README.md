@@ -40,6 +40,8 @@ bundle exec ruby -rbundler/setup -rwpbsolver -e "WPBSolver::Problem.new(12,3).so
 bundle exec ruby -rbundler/setup -rwpbsolver -e "puts WPBSolver::Problem.new(12,3).solve_all.count"
 ```
 
+Currently the fastest solution is implemented in `WPBSolver::Problem#solve_all_fast`.
+
 ## Development
 
 After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
