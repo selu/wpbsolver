@@ -130,42 +130,61 @@ However this algorithm is almost a brute force, found the first solution within 
 
 \begin{table}[ht]
 \begin{center}
-\begin{tabular}{|c|cccc|cccc|}
-  \hline
-  Number & \multicolumn{4}{c|}{Left arm} & \multicolumn{4}{c|}{Right arm} \\
-  \hline
+\begin{tabular}{c|cccc|cccc}
+  \toprule
+  Number & \multicolumn{4}{c|}{Left arm} & \multicolumn{4}{c}{Right arm} \\
+  \midrule
        1 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 \\
        2 & 1 & 2 & 3 & 5 & 4 & 9 & 10 & 11 \\
        3 & 1 & 4 & 6 & 9 & 2 & 7 & 10 & 12 \\
-  \hline
+  \bottomrule
 \end{tabular}
 \end{center}
 \caption{Measures}
 \end{table}
 
+\pgfmathsetmacro{\angleA}{360/3}
+\pgfmathsetmacro{\angleB}{360/9}
+\pgfmathsetmacro{\angleC}{360/27}
+\newlength{\leveldistance}\newlength{\longBdistance}\newlength{\longCdistance}
+\newlength{\discthick}
+\pgfmathsetlength{\leveldistance}{2cm}
+\pgfmathsetlength{\discthick}{0.5cm}
+\pgfmathsetlength{\longBdistance}{sqrt((2*\leveldistance*sin(\angleB))^2
+                     +(2*\leveldistance*cos(\angleB)-\leveldistance)^2)}
+\pgfmathsetlength{\longCdistance}{sqrt((3*\leveldistance*sin(\angleC))^2
+                     +(3*\leveldistance*cos(\angleC)-2*\leveldistance)^2)}
+\pgfmathsetmacro{\angleBmod}{asin(2*\leveldistance*sin(\angleB)/\longBdistance)}
+\pgfmathsetmacro{\angleCmod}{asin(3*\leveldistance*sin(\angleC)/\longCdistance)}
+
+\begin{figure}[ht]
 \begin{tikzpicture}[
-  ball/.style       = {shape=circle, top color=white, minimum size=0.5cm},
+  ball/.style       = {shape=circle, top color=white, minimum size=0.8cm},
   choose/.style     = {ball, bottom color=gray!30},
   heavy/.style      = {ball, bottom color=red!30},
   light/.style      = {ball, bottom color=blue!30},
-  nothing/.style    = {ball, bottom color=white, draw=magenta},
+  nothing/.style    = {ball, bottom color=magenta!30},
   heavier/.style    = {draw=red, ->},
   lighter/.style    = {draw=blue, ->},
   equal/.style      = {draw=gray, ->},
   grow cyclic, thick,
-  level/.style =    { level distance=2cm },
-  long2/.style      =  { level distance=2.7827cm },
-  long3/.style      =  { level distance=2.3739cm },
-  level 1/.style =  { sibling angle=120 },
-  level 2/.style =  { sibling angle=67.5157 },
-  level 3/.style =  { sibling angle=40.8554 },
-  lightrot/.style   = { rotate=27.5157 },
-  heavyrot/.style   = { rotate=-27.5157 }
+  level/.style      = { level distance=\leveldistance },
+  long2/.style      = { level distance=\longBdistance },
+  long3/.style      = { level distance=\longCdistance },
+  level 1/.style    = { sibling angle=\angleA },
+  level 2/.style    = { sibling angle=\angleBmod },
+  level 3/.style    = { sibling angle=\angleCmod },
+  lightrot/.style   = { rotate=\angleBmod-\angleB },
+  heavyrot/.style   = { rotate=\angleB-\angleBmod }
 ]
-\fill[green!30] circle(0.5cm);
-\fill[even odd rule, green!20] circle(2.5cm) circle(1.5cm);
-\fill[even odd rule, green!10] circle(4.5cm) circle(3.5cm);
-\fill[even odd rule, yellow!30] circle(6.5cm) circle(5.5cm);
+\fill[teal!40] circle(\discthick);
+\foreach \i in {1,...,3}
+{
+  \pgfmathsetmacro{\colorl}{40-\i*10}
+  \fill[even odd rule, teal!\colorl]
+      circle(\leveldistance*\i+\discthick)
+      circle(\leveldistance*\i-\discthick);
+}
 \node [choose] (l1) {}
   child { node [choose] (l13) {}
     child [long2] { node [choose] (l133) {}
@@ -232,27 +251,56 @@ However this algorithm is almost a brute force, found the first solution within 
   }
   ;
 \end{tikzpicture}
+\caption{Decision Tree}
+\end{figure}
 
 \begin{table}[ht]
 \begin{center}
-\begin{tabular}{*{8}{c}}
-\cline{1-2} \cline{4-5} \cline{7-8}
-Measures & Result & & Measures & Result & & Measures & Result \\
-\cline{1-2} \cline{4-5} \cline{7-8}
-$>>>$ & $\uparrow 1$ & & $<>=$ & $\uparrow 5$ & & $=<>$ & $\uparrow 9$ \\
-$<<<$ & $\downarrow 1$ & & $><=$ & $\downarrow 5$ & & $=><$ & $\downarrow 9$ \\
+\begin{tabular}{cc}
+\toprule
+Measures & Result \\
+\midrule
+$>>>$ & $\uparrow 1$ \\
+$<<<$ & $\downarrow 1$ \\
 
-$>><$ & $\uparrow 2$ & & $<=>$ & $\uparrow 6$ & & $=<<$ & $\uparrow 10$ \\
-$<<>$ & $\downarrow 2$ & & $>=<$ & $\downarrow 6$ & & $=>>$ & $\downarrow 10$ \\
+$>><$ & $\uparrow 2$ \\
+$<<>$ & $\downarrow 2$ \\
 
-$>>=$ & $\uparrow 3$ & & $<=<$ & $\uparrow 7$ & & $=<=$ & $\uparrow 11$ \\
-$<<=$ & $\downarrow 3$ & & $>=>$ & $\downarrow 7$ & & $=>=$ & $\downarrow 11$ \\
+$>>=$ & $\uparrow 3$ \\
+$<<=$ & $\downarrow 3$ \\
 
-$><>$ & $\uparrow 4$ & & $<==$ & $\uparrow 8$ & & $==<$ & $\uparrow 12$ \\
-$<><$ & $\downarrow 4$ & & $>==$ & $\downarrow 8$ & & $==>$ & $\downarrow 12$ \\
+$><>$ & $\uparrow 4$ \\
+$<><$ & $\downarrow 4$ \\
 
-$===$ & $\emptyset$ & & $><<$ & $\emptyset$ & & $<>>$ & $\emptyset$ \\
-\cline{1-2} \cline{4-5} \cline{7-8}
+$<>=$ & $\uparrow 5$ \\
+$><=$ & $\downarrow 5$ \\
+
+$<=>$ & $\uparrow 6$ \\
+$>=<$ & $\downarrow 6$ \\
+
+$<=<$ & $\uparrow 7$ \\
+$>=>$ & $\downarrow 7$ \\
+
+$<==$ & $\uparrow 8$ \\
+$>==$ & $\downarrow 8$ \\
+
+$=<>$ & $\uparrow 9$ \\
+$=><$ & $\downarrow 9$ \\
+
+$=<<$ & $\uparrow 10$ \\
+$=>>$ & $\downarrow 10$ \\
+
+$=<=$ & $\uparrow 11$ \\
+$=>=$ & $\downarrow 11$ \\
+
+$==<$ & $\uparrow 12$ \\
+$==>$ & $\downarrow 12$ \\
+
+$===$ & $\emptyset$ \\
+$><<$ & $\emptyset$ \\
+$<>>$ & $\emptyset$ \\
+
+\bottomrule
 \end{tabular}
 \end{center}
 \caption{Results}
