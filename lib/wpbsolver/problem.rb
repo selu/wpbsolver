@@ -154,15 +154,6 @@ module WPBSolver
     def solve_all_fast
       @results = []
       generate_combinations.each do |mt|
-        # keep only where put 4 balls onto both arms
-        next unless mt.reduce([0]*3*@measure_number) do |r,s|
-          s.each_with_index{|v,idx| r[v+3*idx] += 1}
-          r
-        end.all? {|v| v == (@ball_number/3)}
-        # non of the balls can be measured in mirror of any other
-        next if mt.combination(2).any? do |pair|
-          pair.transpose.map{|l| l.reduce(&:+)%3}.reduce(&:+) == 0
-        end
         # mt = mt.transpose
         # @count += 1
         # states = [Balls.new(@ball_number)]
@@ -195,6 +186,7 @@ module WPBSolver
       return enum_for(:generate_combinations) unless block_given?
 
       series = [1,-1,0].repeated_permutation(@measure_number).to_a-[[0]*@measure_number]
+      counts = series.map{|i| i.map{|v| [1,0,0].rotate(v)}.flatten}
       len = series.size
       mirrors = series.map do |i|
         series.find_index do |m|
@@ -202,25 +194,58 @@ module WPBSolver
         end
       end
       stack = [0]*@ball_number
-      chosen = []
+      aggr = []
       lev = 0
+      ball_limit = @ball_number/3
       finish = false
       begin
-        chosen[lev] = series[stack[lev]]
+        if lev > 0
+          aggr[lev] = counts[stack[lev]].zip(aggr[lev-1]).map{|v| v.reduce(:+)}
+        else
+          aggr[0] = counts[stack[0]]
+        end
         lev += 1
-        while lev < @ball_number do
-          chosen[lev] = series[stack[lev] = stack[lev-1]+1]
+        while lev < @ball_number && !finish do
+          stack[lev] = stack[lev-1]+1
+          aggr[lev] = counts[stack[lev]].zip(aggr[lev-1]).map{|v| v.reduce(:+)}
+          while (stack[0...lev].include?(mirrors[stack[lev]]) ||
+                 aggr[lev].any? {|s| s>ball_limit}) && !finish
+            lev += 1
+            begin
+              if lev == 0
+                finish = true
+                break
+              end
+              lev -= 1
+              stack[lev] += 1
+            end while stack[lev]+@ball_number == len+lev+1
+            if lev > 0
+              aggr[lev] = counts[stack[lev]].zip(aggr[lev-1]).map{|v| v.reduce(:+)}
+            else
+              aggr[0] = counts[stack[0]]
+            end
+          end
           lev += 1
         end
-        yield chosen
+        yield stack.map{|idx| series[idx]} unless finish
+        lev -= 1
         begin
-          if lev == 0
-            finish = true
-            break
+          lev += 1
+          begin
+            if lev == 0
+              finish = true
+              break
+            end
+            lev -= 1
+            stack[lev] += 1
+          end while (stack[lev]+@ball_number == len+lev+1)
+          if lev > 0
+            aggr[lev] = counts[stack[lev]].zip(aggr[lev-1]).map{|v| v.reduce(:+)}
+          else
+            aggr[0] = counts[stack[0]]
           end
-          lev -= 1
-          stack[lev] += 1
-        end while stack[lev]+@ball_number == len+lev+1
+        end while (stack[0...lev].include?(mirrors[stack[lev]]) ||
+                  aggr[lev].any? {|s| s>ball_limit}) && !finish
       end until finish
     end
 
