@@ -56,7 +56,7 @@ module WPBSolver
         puts "no solution"
         return
       end
-      measures = result.size
+      measures = result[:measures].size
       puts "Measures:"
       result[:measures].each_with_index do |m,idx|
         puts "  #{idx+1}. left: #{m[:left].join(",")}, right: #{m[:right].join(",")}"
