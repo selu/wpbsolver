@@ -1,5 +1,9 @@
+require "yaml"
+
 module WPBSolver
   class Problem
+    attr_reader :ball_number, :measure_number, :results
+
     def initialize(ball_number, measure_number)
       @ball_number = ball_number
       @measure_number = measure_number
@@ -115,33 +119,116 @@ module WPBSolver
           s.each_with_index{|v,idx| r[v+3*idx] += 1}
           r
         end.all? {|v| v == (@ball_number/3)}
-
-        mt = mt.transpose
-        @count += 1
-        states = [Balls.new(@ball_number)]
-        measures = []
-        @measure_number.times do |level|
-          left = []
-          right = []
-          mt[level].each_with_index do |pos,ball|
-            if pos == 1
-              left << ball+1
-            elsif pos == 2
-              right << ball+1
-            end
-          end
-          measures << {left: left, right: right}
-          states = states.map do |balls|
-            Scale.measure(balls, left, right)
-          end.flatten
-          if states.all? {|balls| balls.success?}
-            #measures.last[:set] = states
-            @results << measures
-            return if @results.count >= 1
-          end
+        # non of the balls can be measured in mirror of any other
+        next if mt.combination(2).any? do |pair|
+          pair.transpose.map{|l| l.reduce(&:+)%3}.reduce(&:+) == 0
         end
+        # mt = mt.transpose
+        # @count += 1
+        # states = [Balls.new(@ball_number)]
+        # measures = []
+        # @measure_number.times do |level|
+        #   left = []
+        #   right = []
+        #   mt[level].each_with_index do |pos,ball|
+        #     if pos == 1
+        #       left << ball+1
+        #     elsif pos == 2
+        #       right << ball+1
+        #     end
+        #   end
+        #   measures << {left: left, right: right}
+        #   states = states.map do |balls|
+        #     Scale.measure(balls, left, right)
+        #   end.flatten
+        # end
+        @results << {
+          measures: mt
+          # states: states,
+          # good: states.all? {|balls| balls.success?}
+        }
       end
       @results
+    end
+
+    def solve_all_fast
+      @results = []
+      generate_combinations.each do |mt|
+        # keep only where put 4 balls onto both arms
+        next unless mt.reduce([0]*3*@measure_number) do |r,s|
+          s.each_with_index{|v,idx| r[v+3*idx] += 1}
+          r
+        end.all? {|v| v == (@ball_number/3)}
+        # non of the balls can be measured in mirror of any other
+        next if mt.combination(2).any? do |pair|
+          pair.transpose.map{|l| l.reduce(&:+)%3}.reduce(&:+) == 0
+        end
+        # mt = mt.transpose
+        # @count += 1
+        # states = [Balls.new(@ball_number)]
+        # measures = []
+        # @measure_number.times do |level|
+        #   left = []
+        #   right = []
+        #   mt[level].each_with_index do |pos,ball|
+        #     if pos == 1
+        #       left << ball+1
+        #     elsif pos == 2
+        #       right << ball+1
+        #     end
+        #   end
+        #   measures << {left: left, right: right}
+        #   states = states.map do |balls|
+        #     Scale.measure(balls, left, right)
+        #   end.flatten
+        # end
+        @results << {
+          measures: mt
+          # states: states,
+          # good: states.all? {|balls| balls.success?}
+        }
+        break
+      end
+      @results
+    end
+
+    def generate_combinations
+      return enum_for(:generate_combinations) unless block_given?
+
+      series = [1,-1,0].repeated_permutation(@measure_number).to_a-[[0]*@measure_number]
+      len = series.size
+      mirrors = series.map do |i|
+        series.find_index do |m|
+          [i,m].transpose.map{|v| v.reduce(&:+)}.all? {|s| s==0}
+        end
+      end
+      stack = [0]*@ball_number
+      chosen = []
+      lev = 0
+      finish = false
+      begin
+        chosen[lev] = series[stack[lev]]
+        lev += 1
+        while lev < @ball_number do
+          chosen[lev] = series[stack[lev] = stack[lev-1]+1]
+          lev += 1
+        end
+        yield chosen
+        begin
+          if lev == 0
+            finish = true
+            break
+          end
+          lev -= 1
+          stack[lev] += 1
+        end while stack[lev]+@ball_number == len+lev+1
+      end until finish
+    end
+
+    def save_results
+      File.open("results_#{@ball_number}_#{@measure_number}.yml","w") do |f|
+        f.write(@results.to_yaml)
+      end
     end
   end
 end
