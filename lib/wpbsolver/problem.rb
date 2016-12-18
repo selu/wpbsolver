@@ -50,44 +50,6 @@ module WPBSolver
       nil
     end
 
-    def solve_better(number_of_solutions=1)
-      @count = 0
-      @results = []
-      find_solution_better([Balls.new(@ball_number)], @measure_number, [], number_of_solutions)
-      (0...@results.count).each do |number|
-        puts " -- Solution #{number+1} --"
-        display(number)
-      end
-    end
-
-    def find_solution_better(state_set, max_measures, all_measures, number_of_solutions)
-      puts "Measures: #{max_measures}, states: #{state_set.count}"
-      n = state_set.first.size
-      ids = state_set.first.ids
-      level = n/3
-      ids.combination(level*2).each do |subset|
-        reverse = []
-        subset.combination(level).each do |left|
-          next if reverse.include?(left)
-          right = subset - left
-          reverse << right
-          new_state_set = state_set.map do |bs|
-            Scale.measure(bs, left, right)
-          end.flatten
-          if max_measures == 1 && new_state_set.all? {|bs| bs.success? }
-            @results << all_measures+[{left: left, right: right, set: new_state_set}]
-            return if @results.count >= number_of_solutions
-          elsif max_measures > 1
-            if new_state_set.map(&:case_number).max <= (Scale.number_of_outcomes ** (max_measures-1))
-              find_solution_better(new_state_set, max_measures-1, all_measures+[{left: left, right: right}], number_of_solutions)
-            end
-            return if @results.count >= number_of_solutions
-          end
-        end
-      end
-      nil
-    end
-
     def display(number)
       result = @results[number]
       if result.nil?
@@ -96,13 +58,17 @@ module WPBSolver
       end
       measures = result.size
       puts "Measures:"
-      result.each_with_index do |m,idx|
+      result[:measures].each_with_index do |m,idx|
         puts "  #{idx+1}. left: #{m[:left].join(",")}, right: #{m[:right].join(",")}"
       end
-      puts "Solution:"
-      result.last[:set].each_with_index do |s,idx|
-        mresults = (1..measures).map{|level| ["EQUAL", "HEAVY", "LIGHT"][(idx/(3 ** (measures-level)))%3]}.join(",")
-        puts "#{s.result} (#{mresults})"
+      if result[:good]
+        puts "Solution:"
+        result[:states].each_with_index do |s,idx|
+          mresults = (1..measures).map{|level| ["EQUAL", "HEAVY", "LIGHT"][(idx/(3 ** (measures-level)))%3]}.join(",")
+          puts "#{s.result} (#{mresults})"
+        end
+      else
+        puts "Not a solution!"
       end
       nil
     end
@@ -123,61 +89,61 @@ module WPBSolver
         next if mt.combination(2).any? do |pair|
           pair.transpose.map{|l| l.reduce(&:+)%3}.reduce(&:+) == 0
         end
-        # mt = mt.transpose
-        # @count += 1
-        # states = [Balls.new(@ball_number)]
-        # measures = []
-        # @measure_number.times do |level|
-        #   left = []
-        #   right = []
-        #   mt[level].each_with_index do |pos,ball|
-        #     if pos == 1
-        #       left << ball+1
-        #     elsif pos == 2
-        #       right << ball+1
-        #     end
-        #   end
-        #   measures << {left: left, right: right}
-        #   states = states.map do |balls|
-        #     Scale.measure(balls, left, right)
-        #   end.flatten
-        # end
+        mt = mt.transpose
+        @count += 1
+        states = [Balls.new(@ball_number)]
+        measures = []
+        @measure_number.times do |level|
+          left = []
+          right = []
+          mt[level].each_with_index do |pos,ball|
+            if pos == 1
+              left << ball+1
+            elsif pos == 2
+              right << ball+1
+            end
+          end
+          measures << {left: left, right: right}
+          states = states.map do |balls|
+            Scale.measure(balls, left, right)
+          end.flatten
+        end
         @results << {
-          measures: mt
-          # states: states,
-          # good: states.all? {|balls| balls.success?}
+          measures: measures,
+          states: states,
+          good: states.all? {|balls| balls.success?}
         }
       end
       @results
     end
 
-    def solve_all_fast
+    def solve_all_fast(max_result=nil)
       @results = []
       generate_combinations.each do |mt|
-        # mt = mt.transpose
-        # @count += 1
-        # states = [Balls.new(@ball_number)]
-        # measures = []
-        # @measure_number.times do |level|
-        #   left = []
-        #   right = []
-        #   mt[level].each_with_index do |pos,ball|
-        #     if pos == 1
-        #       left << ball+1
-        #     elsif pos == 2
-        #       right << ball+1
-        #     end
-        #   end
-        #   measures << {left: left, right: right}
-        #   states = states.map do |balls|
-        #     Scale.measure(balls, left, right)
-        #   end.flatten
-        # end
+        mt = mt.transpose
+        states = [Balls.new(@ball_number)]
+        measures = []
+        @measure_number.times do |level|
+          left = []
+          right = []
+          mt[level].each_with_index do |pos,ball|
+            if pos > 0
+              left << ball+1
+            elsif pos < 0
+              right << ball+1
+            end
+          end
+          measures << {left: left, right: right}
+          states = states.map do |balls|
+            Scale.measure(balls, left, right)
+          end.flatten
+        end
         @results << {
-          measures: mt
-          # states: states,
-          # good: states.all? {|balls| balls.success?}
+          measures: measures,
+          states: states,
+          good: states.all? {|balls| balls.success?}
         }
+        break if !max_result.nil? && @results.count >= max_result
       end
       @results
     end
