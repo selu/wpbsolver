@@ -187,7 +187,6 @@ module WPBSolver
           # states: states,
           # good: states.all? {|balls| balls.success?}
         }
-        break
       end
       @results
     end
