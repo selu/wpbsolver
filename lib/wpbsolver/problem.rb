@@ -215,6 +215,40 @@ module WPBSolver
       end until finish
     end
 
+    def generate_good_combinations
+      return enum_for(:generate_good_combinations) unless block_given?
+
+      # all working measure series
+      series = [1,-1,0].repeated_permutation(@measure_number).to_a-[[0]*@measure_number]
+      # remove mirrored series
+      (0...@measure_number).each do |level|
+        series.delete_if do |s|
+          (0..level).all? {|idx| s[idx] == (idx == level ? -1 : 0)}
+        end
+      end
+      spart = series.group_by do |s|
+        case
+        when s.all?{|v| v!=0}
+          :variable
+        else
+          :fix
+        end
+      end
+
+      spart[:variable].combination(spart[:variable].count-1).each do |variable|
+        base = variable + spart[:fix]
+        [1,-1].repeated_permutation(base.count-1).each do |mirror|
+          chosen = base.map.with_index do |s,i|
+            s.map{|v| v*([1]+mirror)[i]}
+          end
+          yield chosen if chosen.reduce([0]*3*@measure_number) do |r,s|
+            s.each_with_index{|v,idx| r[v+3*idx] += 1}
+            r
+          end.all? {|v| v == (@ball_number/3)}
+        end
+      end
+    end
+
     def save_results
       File.open("results_#{@ball_number}_#{@measure_number}.yml","w") do |f|
         f.write(@results.to_yaml)
