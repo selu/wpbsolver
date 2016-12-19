@@ -89,14 +89,13 @@ module WPBSolver
         next if mt.combination(2).any? do |pair|
           pair.transpose.map{|l| l.reduce(&:+)%3}.reduce(&:+) == 0
         end
-        mt = mt.transpose
         @count += 1
         states = [Balls.new(@ball_number)]
         measures = []
         @measure_number.times do |level|
           left = []
           right = []
-          mt[level].each_with_index do |pos,ball|
+          mt.transpose[level].each_with_index do |pos,ball|
             if pos == 1
               left << ball+1
             elsif pos == 2
@@ -110,6 +109,7 @@ module WPBSolver
         end
         @results << {
           measures: measures,
+          mt: mt,
           states: states,
           good: states.all? {|balls| balls.success?}
         }
@@ -120,13 +120,12 @@ module WPBSolver
     def solve_all_fast(max_result=nil)
       @results = []
       generate_combinations.each do |mt|
-        mt = mt.transpose
         states = [Balls.new(@ball_number)]
         measures = []
         @measure_number.times do |level|
           left = []
           right = []
-          mt[level].each_with_index do |pos,ball|
+          mt.transpose[level].each_with_index do |pos,ball|
             if pos > 0
               left << ball+1
             elsif pos < 0
@@ -140,6 +139,7 @@ module WPBSolver
         end
         @results << {
           measures: measures,
+          mt: mt,
           states: states,
           good: states.all? {|balls| balls.success?}
         }
