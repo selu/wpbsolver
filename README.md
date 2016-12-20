@@ -23,7 +23,7 @@ bundle install
 One way is to start `./bin/console` and run the following ruby codes:
 
 ```ruby
-p = WPBSolver::Problem.new(12,3)  # start with 12 balls and 3
+p = WPBSolver::Problem.new(3,12)  # start with 12 balls and 3
                                   # measures
 p.solve_simple                    # find one solution with a simple
                                   # algorithm
@@ -35,9 +35,9 @@ p.solve_all                       # find all possible solutions
 The other way is to run same codes directly from ruby:
 
 ```
-bundle exec ruby -rbundler/setup -rwpbsolver -e "WPBSolver::Problem.new(12,3).solve_simple"
+bundle exec ruby -rbundler/setup -rwpbsolver -e "WPBSolver::Problem.new(3).solve_simple"
 
-bundle exec ruby -rbundler/setup -rwpbsolver -e "puts WPBSolver::Problem.new(12,3).solve_all.count"
+bundle exec ruby -rbundler/setup -rwpbsolver -e "puts WPBSolver::Problem.new(3).solve_all.count"
 ```
 
 Currently the fastest solution is implemented in `WPBSolver::Problem#solve_all_fast`.

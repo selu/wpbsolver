@@ -4,9 +4,14 @@ module WPBSolver
   class Problem
     attr_reader :ball_number, :measure_number, :results
 
-    def initialize(ball_number, measure_number)
-      @ball_number = ball_number
+    def initialize(measure_number,ball_number=nil)
       @measure_number = measure_number
+      @ball_number = ball_number||max_ball_number
+      raise ArgumentError, "Ball number is too high" if @ball_number > max_ball_number
+    end
+
+    def max_ball_number
+      3**@measure_number/6*3   # 2 -> 3, 3 -> 12, 4 -> 39, 5 -> 120
     end
 
     def solve_simple(number_of_solutions=1)
