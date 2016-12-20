@@ -28,4 +28,5 @@ end
 require "wpbsolver/balls"
 require "wpbsolver/measure"
 require "wpbsolver/scale"
+require "wpbsolver/result"
 require "wpbsolver/problem"
