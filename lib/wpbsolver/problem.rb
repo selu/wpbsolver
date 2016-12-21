@@ -114,7 +114,7 @@ module WPBSolver
         end
         @results << {
           measures: measures,
-          mt: mt,
+          mcomb: mt,
           states: states,
           good: states.all? {|balls| balls.success?}
         }
@@ -144,7 +144,7 @@ module WPBSolver
         end
         @results << {
           measures: measures,
-          mt: mt,
+          mcomb: mt,
           states: states,
           good: states.all? {|balls| balls.success?}
         }
