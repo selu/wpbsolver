@@ -1,5 +1,9 @@
 module WPBSolver
   class Balls
+    include Comparable
+
+    attr_reader :heavy, :light
+
     def initialize(count)
       @heavy = [1]*count
       @light = [1]*count
@@ -53,6 +57,18 @@ module WPBSolver
         end
       else
         return "no solution #{inspect}"
+      end
+    end
+
+    def <=>(other)
+      if self.size == other.size
+        if self.case_number == other.case_number
+          (self.heavy+self.light) <=> (other.heavy+other.light)
+        else
+          self.case_number <=> other.case_number
+        end
+      else
+        self.size <=> other.size
       end
     end
   end
