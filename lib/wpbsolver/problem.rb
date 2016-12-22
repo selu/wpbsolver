@@ -263,12 +263,24 @@ module WPBSolver
     def equiv
       grps = []
       @results.each do |r|
+        rcomb = r.mcomb
         group = grps.find do |g|
+          gcomb = g[0].mcomb
           [1,-1].repeated_permutation(@measure_number).any? do |p|
+            rcomb.all? do |l|
+              gcomb.include?(l.map.with_index {|v,idx| v*p[idx]})
+            end
           end
+        end
+        if group
+          group << r
+        else
+          grps << [r]
         end
       end
       grps
     end
+
+    # e.map{|g| g.sort.first.mcomb.transpose}.each{|m| puts "---"*12; m.each{|l| l.each{|v| print "%2d " % v}; puts}};
   end
 end
