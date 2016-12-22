@@ -1,5 +1,7 @@
 module WPBSolver
   class Result
+    include Comparable
+
     attr_reader :mcomb, :measures, :states, :good
 
     def initialize(params)
@@ -50,6 +52,10 @@ module WPBSolver
     end
 
     def to_s
+    end
+
+    def <=>(other)
+        self.mcomb.map{|r| r.map{|v| (v+2)%3-1}} <=> other.mcomb.map{|r| r.map{|v| (v+2)%3-1}}
     end
   end
 end
