@@ -112,12 +112,12 @@ module WPBSolver
             Scale.measure(balls, left, right)
           end.flatten
         end
-        @results << {
+        @results << Result.new(
           measures: measures,
           mcomb: mt,
           states: states,
           good: states.all? {|balls| balls.success?}
-        }
+        )
       end
       @results
     end
@@ -142,12 +142,12 @@ module WPBSolver
             Scale.measure(balls, left, right)
           end.flatten
         end
-        @results << {
+        @results << Result.new(
           measures: measures,
           mcomb: mt,
           states: states,
           good: states.all? {|balls| balls.success?}
-        }
+        )
         break if !max_result.nil? && @results.count >= max_result
       end
       @results
@@ -258,6 +258,17 @@ module WPBSolver
       File.open("results_#{@ball_number}_#{@measure_number}.yml","w") do |f|
         f.write(@results.to_yaml)
       end
+    end
+
+    def equiv
+      grps = []
+      @results.each do |r|
+        group = grps.find do |g|
+          [1,-1].repeated_permutation(@measure_number).any? do |p|
+          end
+        end
+      end
+      grps
     end
   end
 end
