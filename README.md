@@ -6,7 +6,7 @@ This little program is created to find determined solutions for [Weighing Pool B
 
 First of all you have to install ruby (if you don't have it already) using [rbenv](https://github.com/fesplugas/rbenv-installer) on Linux or [rubyinstaller] on Windows. Or you can use [jruby](http://jruby.org/) on both Linux and Windows.
 
-If you start with rbenv, you need to install the latest ruby with `rbenv install 2.3.3` or even it can be used to instal jruby with `rbenv install jruby-9.1.6.0`, then `rbenv global 2.3.3` set it to the default ruby.
+If you start with rbenv, you need to install the latest ruby with `rbenv install 2.4.0` or even it can be used to instal jruby with `rbenv install jruby-9.1.6.0`.
 
 You will need bundler and it's not installed automatically: `gem install bundler`.
 
