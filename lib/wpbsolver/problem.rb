@@ -220,9 +220,7 @@ module WPBSolver
       end until finish
     end
 
-    def generate_good_combinations
-      return enum_for(:generate_good_combinations) unless block_given?
-
+    def measure_series
       # all working measure series
       series = [1,-1,0].repeated_permutation(@measure_number).to_a-[[0]*@measure_number]
       # remove mirrored series
@@ -231,7 +229,7 @@ module WPBSolver
           (0..level).all? {|idx| s[idx] == (idx == level ? -1 : 0)}
         end
       end
-      spart = series.group_by do |s|
+      series.group_by do |s|
         case
         when s.all?{|v| v!=0}
           :variable
@@ -239,6 +237,12 @@ module WPBSolver
           :fix
         end
       end
+    end
+
+    def generate_good_combinations
+      return enum_for(:generate_good_combinations) unless block_given?
+
+      spart = measure_series
 
       spart[:variable].combination(spart[:variable].count-1).each do |variable|
         base = variable + spart[:fix]
@@ -250,6 +254,35 @@ module WPBSolver
             s.each_with_index{|v,idx| r[v+3*idx] += 1}
             r
           end.all? {|v| v == (@ball_number/3)}
+        end
+      end
+    end
+
+    def generate_uniq_good_combinations
+      return enum_for(:generate_uniq_good_combinations) unless block_given?
+
+      spart = measure_series
+      count = 0
+
+      base = spart[:variable][0...-1] + spart[:fix]
+      head_num = spart[:fix].count{|v| v[0] == 1}
+      [1,-1].repeated_permutation(spart[:variable].count-2).each do |mirror1|
+        num_pos = @ball_number/3 - mirror1.count{|v| v==-1}
+        (0...head_num).to_a.combination(num_pos).each do |positions|
+          mirror2=[1]*head_num
+          positions.each{|p| mirror2[p] *= -1}
+          [1,-1].repeated_permutation(spart[:fix].count-head_num).each do |mirror3|
+            mirror = [1]+mirror1+mirror2+mirror3
+            chosen = base.map.with_index do |s,i|
+              s.map{|v| v*mirror[i]}
+            end
+            yield chosen if chosen.reduce([0]*3*@measure_number) do |r,s|
+              s.each_with_index{|v,idx| r[v+3*idx] += 1}
+              r
+            end.all? {|v| v == (@ball_number/3)}
+            count += 1
+            puts "cnt: #{count}" if count % 1000000 == 0
+          end
         end
       end
     end
