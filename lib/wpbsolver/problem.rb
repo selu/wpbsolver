@@ -7,6 +7,7 @@ module WPBSolver
     def initialize(measure_number,ball_number=nil)
       @measure_number = measure_number
       @ball_number = ball_number||max_ball_number
+      @third = @ball_number/3
       raise ArgumentError, "Ball number is too high" if @ball_number > max_ball_number
     end
 
@@ -89,7 +90,7 @@ module WPBSolver
         next unless mt.reduce([0]*3*@measure_number) do |r,s|
           s.each_with_index{|v,idx| r[v+3*idx] += 1}
           r
-        end.all? {|v| v == (@ball_number/3)}
+        end.all? {|v| v == @third}
         # non of the balls can be measured in mirror of any other
         next if mt.combination(2).any? do |pair|
           pair.transpose.map{|l| l.reduce(&:+)%3}.reduce(&:+) == 0
@@ -167,7 +168,7 @@ module WPBSolver
       stack = [0]*@ball_number
       aggr = []
       lev = 0
-      ball_limit = @ball_number/3
+      ball_limit = @third
       finish = false
       begin
         if lev > 0
@@ -253,7 +254,7 @@ module WPBSolver
           yield chosen if chosen.reduce([0]*3*@measure_number) do |r,s|
             s.each_with_index{|v,idx| r[v+3*idx] += 1}
             r
-          end.all? {|v| v == (@ball_number/3)}
+          end.all? {|v| v == @third}
         end
       end
     end
@@ -273,39 +274,46 @@ module WPBSolver
       end
 
       count = 0
+      result_count = 0
 
       base = [spart[:head]]
       comb = []
       level = 0
       loop do
         count += 1
-        puts "count: #{count}" if count % 1000000 == 0
+        puts "count: #{count}, results: #{result_count}" if count % 1000000 == 0
         break if level < 0
-        if level == @measure_number
-          yield base[level]
-          level -= 1
-          next
-        end
         counts = base[level].each_with_object(Hash.new(0)){|e,h| h[e[level]] += 1}
-        if counts.values.any?{|c| c>@ball_number/3}
+        if counts.values.any?{|c| c>@third}
           level -= 1
           next
         end
         unless comb[level]
-          comb[level] = (0...spart[level].count).to_a.combination(@ball_number/3-counts[1])
+          comb[level] = (0...spart[level].count).to_a.combination(@third-counts[-1])
         end
         begin
-          mirror = comb[level].next
-          base[level+1] = base[level]+spart[level].map.with_index do |s,i|
-            mirror.include?(i) ? s.map{|v| -v} : s
-          end
+          begin
+            mirror = comb[level].next
+            base[level+1] = base[level]+spart[level].map.with_index do |s,i|
+              mirror.include?(i) ? s.map{|v| -v} : s
+            end
+          end while base[level+1].each_with_object(Hash.new(0)) do |e,h|
+            (level+1...@measure_number).each{|level| h[e[level]+10*level] +=1}
+          end.values.any? {|c| c>@third}
           level += 1
+          if level == @measure_number
+            yield base[level]
+            result_count += 1
+            level -= 1
+            next
+          end
         rescue StopIteration
           comb[level] = nil
           level -= 1
           next
         end
       end
+      puts "final count: #{count}"
     end
 
     def save_results
