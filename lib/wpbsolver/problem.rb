@@ -278,8 +278,10 @@ module WPBSolver
 
       base = [spart[:head]]
       comb = []
+      idx = []
       level = 0
       loop do
+        move_to_next = false
         count += 1
         puts "count: #{count}, results: #{result_count}" if count % 1000000 == 0
         break if level < 0
@@ -289,26 +291,29 @@ module WPBSolver
           next
         end
         unless comb[level]
-          comb[level] = (0...spart[level].count).to_a.combination(@third-counts[-1])
+          comb[level] = (0...spart[level].count).to_a.combination(@third-counts[-1]).to_a
+          idx[level] = 0
         end
         begin
-          begin
-            mirror = comb[level].next
-            base[level+1] = base[level]+spart[level].map.with_index do |s,i|
-              mirror.include?(i) ? s.map{|v| -v} : s
-            end
-          end while base[level+1].each_with_object(Hash.new(0)) do |e,h|
-            (level+1...@measure_number).each{|level| h[e[level]+10*level] +=1}
-          end.values.any? {|c| c>@third}
-          level += 1
-          if level == @measure_number
-            yield base[level]
-            result_count += 1
+          if idx[level] == comb[level].count
+            comb[level] = nil
             level -= 1
-            next
+            move_to_next = true
+            break
           end
-        rescue StopIteration
-          comb[level] = nil
+          mirror = comb[level][idx[level]]
+          idx[level] += 1
+          base[level+1] = base[level]+spart[level].map.with_index do |s,i|
+            mirror.include?(i) ? s.map{|v| -v} : s
+          end
+        end while base[level+1].each_with_object(Hash.new(0)) do |e,h|
+          (level+1...@measure_number).each{|level| h[e[level]+10*level] +=1}
+        end.values.any? {|c| c>@third}
+        next if move_to_next
+        level += 1
+        if level == @measure_number
+          yield base[level]
+          result_count += 1
           level -= 1
           next
         end
