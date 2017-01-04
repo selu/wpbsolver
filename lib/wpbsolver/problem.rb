@@ -275,7 +275,7 @@ module WPBSolver
 
       count = 0
       result_count = 0
-      prev_time = Time.now
+      start_time = prev_time = Time.now
 
       base = [spart[:head]]
       comb = []
@@ -286,7 +286,7 @@ module WPBSolver
         count += 1
         if count % 1000000 == 0
           next_time = Time.now
-          puts "count: #{count}, results: #{result_count}, progress: #{(100.0*idx[0]/comb[0].count).round(3)}%, estimation: #{count*comb[0].count/idx[0]}, duration: #{(next_time-prev_time).round(2)}s"
+          puts "count: #{count}, results: #{result_count}, progress: #{(100.0*idx[0]/comb[0].count).round(3)}%, est: #{count*comb[0].count/idx[0]} at #{start_time+(next_time-start_time)*comb[0].count/idx[0]}, duration: #{(next_time-prev_time).round(2)}s"
           prev_time = next_time
         end
         break if level < 0
