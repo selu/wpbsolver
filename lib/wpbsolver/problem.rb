@@ -275,6 +275,7 @@ module WPBSolver
 
       count = 0
       result_count = 0
+      prev_time = Time.now
 
       base = [spart[:head]]
       comb = []
@@ -283,7 +284,11 @@ module WPBSolver
       loop do
         move_to_next = false
         count += 1
-        puts "count: #{count}, results: #{result_count}" if count % 1000000 == 0
+        if count % 1000000 == 0
+          next_time = Time.now
+          puts "count: #{count}, results: #{result_count}, progress: #{(100.0*idx[0]/comb[0].count).round(3)}%, estimation: #{count*comb[0].count/idx[0]}, duration: #{(next_time-prev_time).round(2)}s"
+          prev_time = next_time
+        end
         break if level < 0
         counts = base[level].each_with_object(Hash.new(0)){|e,h| h[e[level]] += 1}
         if counts.values.any?{|c| c>@third}
