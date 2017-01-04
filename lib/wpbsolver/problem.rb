@@ -312,7 +312,7 @@ module WPBSolver
             mirror.include?(i) ? s.map{|v| -v} : s
           end
         end while base[level+1].each_with_object(Hash.new(0)) do |e,h|
-          (level+1...@measure_number).each{|level| h[e[level]+10*level] +=1}
+          (level+1...@measure_number).each{|lvl| h[e[lvl]+10*lvl] +=1}
         end.values.any? {|c| c>@third}
         next if move_to_next
         level += 1
