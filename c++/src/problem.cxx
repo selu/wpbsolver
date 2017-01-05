@@ -111,7 +111,8 @@ void Problem::generateSolutions() {
         if (result_count % 1000000 == 0) {
           cout << "   >>> " << result_count << " <<<" << endl;
         }
-        //printSeries(result);
+        printSeries(result);
+        break;
         level--;
       }
     }
@@ -165,10 +166,34 @@ void Problem::baseSeries(int *series) {
 
 void Problem::printSeries(int *series) {
   int i, pos;
+  int measures[measure_number*third_number*2];
+  int digits = floor(log10(ball_number))+2;
+
   for (i=0; i<measure_number; i++) {
+    int left = 0, right = 0;
     cout << setw(3) << i+1 << ": ";
     for (pos=0; pos<ball_number; pos++) {
+      switch (series[pos*measure_number+i]) {
+        case 1:
+          measures[i*third_number*2+left++] = pos+1;
+          break;
+        case -1:
+          measures[i*third_number*2+third_number+right++] = pos+1;
+          break;
+      }
       cout << setw(3) << series[pos*measure_number+i];
+    }
+    cout << endl;
+  }
+
+  cout << endl;
+  for(i=0; i<measure_number; i++) {
+    cout << setw(3) << i+1 << ": ";
+    for(pos=0; pos<third_number*2; pos++) {
+      if (pos == third_number) {
+        cout << " |";
+      }
+      cout << setw(digits) << measures[i*third_number*2+pos];
     }
     cout << endl;
   }
