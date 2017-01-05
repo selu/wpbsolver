@@ -1,6 +1,8 @@
 #include <iostream>
 #include <iomanip>
 #include <cmath>
+#include <vector>
+#include <algorithm>
 #include "problem.hxx"
 
 using namespace std;
@@ -17,6 +19,104 @@ Problem::Problem(int mn) {
 void Problem::generateSolutions() {
   int series[ball_number*measure_number];
   baseSeries(series);
+
+  int ones_start[measure_number], ones_end[measure_number];
+  int result_count = 0;
+  int i=1, level=0, pos;
+  ones_start[level] = i;
+  while (i<ball_number) {
+    if (series[measure_number*i+level] == 1) {
+      i++;
+    } else {
+      ones_end[level] = i;
+      level++;
+      ones_start[level] = i;
+    }
+  }
+  ones_end[level] = i;
+
+  level = 0;
+  int result[ball_number*measure_number];
+  bool comb[measure_number];
+  for (i=0; i<measure_number; i++) {
+    result[i] = series[i];
+    comb[i] = false;
+  }
+  int counts[PLACE_NUMBER*measure_number];
+  vector<bool> mirror(ball_number);
+  while (level>=0) {
+    for (i=0; i<PLACE_NUMBER; i++) {
+      counts[i] = 0;
+    }
+    for (pos=0; pos<ones_start[level]; pos++) {
+      counts[result[measure_number*pos+level]+1]++;
+    }
+    bool wrong = false;
+    for (i=0; i<PLACE_NUMBER; i++) {
+      if (counts[i] > third_number) {
+        level--;
+        wrong = true;
+        break;
+      }
+    }
+    if (wrong) {
+      continue;
+    }
+    wrong = false;
+    if (!comb[level]) {
+      fill(mirror.begin()+ones_start[level], mirror.end(), false);
+      fill(mirror.begin()+ones_end[level]-third_number+counts[0], mirror.begin()+ones_end[level], true);
+      comb[level] = true;
+    } else {
+      wrong = !next_permutation(mirror.begin()+ones_start[level], mirror.begin()+ones_end[level]);
+    }
+    do {
+      if (wrong) {
+        break;
+      }
+      for(pos=ones_start[level]; pos<ones_end[level]; pos++) {
+        for(i=0; i<measure_number; i++) {
+          result[measure_number*pos+i] = series[measure_number*pos+i] * (mirror[pos] ? -1 : 1);
+        }
+      }
+      for (i=0; i<PLACE_NUMBER*measure_number; i++) {
+        counts[i] = 0;
+      }
+      for (i=level+1; i<measure_number; i++) {
+        for (pos=0; pos<ones_end[level]; pos++) {
+          counts[i*PLACE_NUMBER+result[measure_number*pos+i]+1]++;
+        }
+      }
+      for (i=(level+1)*PLACE_NUMBER; i<measure_number*PLACE_NUMBER; i++) {
+        if (counts[i] > third_number) {
+          break;
+        }
+      }
+      if (i == measure_number*PLACE_NUMBER) {
+        break;
+      } else {
+        if (!next_permutation(mirror.begin()+ones_start[level], mirror.begin()+ones_end[level])) {
+          wrong = true;
+          break;
+        }
+      }
+    } while(true);
+    if (wrong) {
+      comb[level] = false;
+      level--;
+    } else {
+      level++;
+      if (level == measure_number) {
+        result_count++;
+        if (result_count % 1000000 == 0) {
+          cout << "   >>> " << result_count << " <<<" << endl;
+        }
+        //printSeries(result);
+        level--;
+      }
+    }
+  }
+  cout << "Result count: " << result_count << endl;
 }
 
 void Problem::baseSeries(int *series) {
