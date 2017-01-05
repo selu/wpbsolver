@@ -13,6 +13,10 @@ Problem::Problem(int mn) {
 
 void Problem::generateSolutions() {
   int series[ball_number*measure_number];
+  baseSeries(series);
+}
+
+void Problem::baseSeries(int *series) {
   int i, pos = 1;
   for (i=0; i<measure_number; i++) {
     series[i] = 1;
@@ -54,6 +58,10 @@ void Problem::generateSolutions() {
     } while (!ok);
     pos++;
   }
+}
+
+void Problem::printSeries(int *series) {
+  int i, pos;
   for (i=0; i<measure_number; i++) {
     cout << setw(3) << i+1 << ": ";
     for (pos=0; pos<ball_number; pos++) {
