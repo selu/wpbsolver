@@ -5,10 +5,13 @@
 
 using namespace std;
 
+#define OUTCOME_NUMBER 3
+#define PLACE_NUMBER 3
+
 Problem::Problem(int mn) {
   measure_number = mn;
-  third_number = pow(3, measure_number)/6;
-  ball_number = third_number*3;
+  third_number = pow(OUTCOME_NUMBER, measure_number)/6;
+  ball_number = third_number*PLACE_NUMBER;
 }
 
 void Problem::generateSolutions() {
@@ -29,7 +32,7 @@ void Problem::baseSeries(int *series) {
     do {
       i = measure_number-1;
       while (i>=0) {
-        series[measure_number*pos+i] = (series[measure_number*pos+i]+2)%3-1;
+        series[measure_number*pos+i] = (series[measure_number*pos+i]+2)%PLACE_NUMBER-1;
         if (series[measure_number*pos+i] != 1) {
           break;
         }
