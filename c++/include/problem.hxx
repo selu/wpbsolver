@@ -7,4 +7,5 @@ public:
 private:
   int measure_number;
   int ball_number;
+  int third_number;
 };

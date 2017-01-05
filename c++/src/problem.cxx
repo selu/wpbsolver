@@ -7,7 +7,8 @@ using namespace std;
 
 Problem::Problem(int mn) {
   measure_number = mn;
-  ball_number = floor(pow(3, measure_number)/6)*3;
+  third_number = pow(3, measure_number)/6;
+  ball_number = third_number*3;
 }
 
 void Problem::generateSolutions() {
