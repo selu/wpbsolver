@@ -1,26 +1,20 @@
 #include <iostream>
 #include <iomanip>
 #include <cmath>
-#include <vector>
 #include <algorithm>
 #include "problem.hxx"
-
-using namespace std;
 
 #define OUTCOME_NUMBER 3
 #define PLACE_NUMBER 3
 
-Problem::Problem(int mn) {
-  measure_number = mn;
-  third_number = pow(OUTCOME_NUMBER, measure_number)/6;
-  ball_number = third_number*PLACE_NUMBER;
+Problem::Problem(int mn) : measure_number(mn), third_number(pow(OUTCOME_NUMBER, measure_number)/6), ball_number(third_number*PLACE_NUMBER) {
 }
 
 void Problem::generateSolutions() {
-  int series[ball_number*measure_number];
+  std::vector<int> series(ball_number*measure_number);
   baseSeries(series);
 
-  int ones_start[measure_number], ones_end[measure_number];
+  std::vector<int> ones_start(measure_number), ones_end(measure_number);
   int result_count = 0;
   int i=1, level=0, pos;
   ones_start[level] = i;
@@ -36,14 +30,14 @@ void Problem::generateSolutions() {
   ones_end[level] = i;
 
   level = 0;
-  int result[ball_number*measure_number];
+  std::vector<int> result(ball_number*measure_number);
   bool comb[measure_number];
   for (i=0; i<measure_number; i++) {
     result[i] = series[i];
     comb[i] = false;
   }
-  int counts[PLACE_NUMBER*measure_number];
-  vector<bool> mirror(ball_number);
+  std::vector<int> counts(PLACE_NUMBER*measure_number);
+  std::vector<bool> mirror(ball_number);
   while (level>=0) {
     for (i=0; i<PLACE_NUMBER; i++) {
       counts[i] = 0;
@@ -64,11 +58,11 @@ void Problem::generateSolutions() {
     }
     wrong = false;
     if (!comb[level]) {
-      fill(mirror.begin()+ones_start[level], mirror.end(), false);
-      fill(mirror.begin()+ones_end[level]-third_number+counts[0], mirror.begin()+ones_end[level], true);
+      std::fill(mirror.begin()+ones_start[level], mirror.end(), false);
+      std::fill(mirror.begin()+ones_end[level]-third_number+counts[0], mirror.begin()+ones_end[level], true);
       comb[level] = true;
     } else {
-      wrong = !next_permutation(mirror.begin()+ones_start[level], mirror.begin()+ones_end[level]);
+      wrong = !std::next_permutation(mirror.begin()+ones_start[level], mirror.begin()+ones_end[level]);
     }
     do {
       if (wrong) {
@@ -109,7 +103,7 @@ void Problem::generateSolutions() {
       if (level == measure_number) {
         result_count++;
         if (result_count % 1000000 == 0) {
-          cout << "   >>> " << result_count << " <<<" << endl;
+	  std::cout << "   >>> " << result_count << " <<<" << std::endl;
         }
         printSeries(result);
         break;
@@ -117,10 +111,10 @@ void Problem::generateSolutions() {
       }
     }
   }
-  cout << "Result count: " << result_count << endl;
+  std::cout << "Result count: " << result_count << std::endl;
 }
 
-void Problem::baseSeries(int *series) {
+void Problem::baseSeries(std::vector<int>& series) {
   int i, pos = 1;
   for (i=0; i<measure_number; i++) {
     series[i] = 1;
@@ -164,14 +158,14 @@ void Problem::baseSeries(int *series) {
   }
 }
 
-void Problem::printSeries(int *series) {
+void Problem::printSeries(std::vector<int>& series) {
   int i, pos;
   int measures[measure_number*third_number*2];
   int digits = floor(log10(ball_number))+2;
 
   for (i=0; i<measure_number; i++) {
     int left = 0, right = 0;
-    cout << setw(3) << i+1 << ": ";
+    std::cout << std::setw(3) << i+1 << ": ";
     for (pos=0; pos<ball_number; pos++) {
       switch (series[pos*measure_number+i]) {
         case 1:
@@ -181,20 +175,20 @@ void Problem::printSeries(int *series) {
           measures[i*third_number*2+third_number+right++] = pos+1;
           break;
       }
-      cout << setw(3) << series[pos*measure_number+i];
+      std::cout << std::setw(3) << series[pos*measure_number+i];
     }
-    cout << endl;
+    std::cout << std::endl;
   }
 
-  cout << endl;
+  std::cout << std::endl;
   for(i=0; i<measure_number; i++) {
-    cout << setw(3) << i+1 << ": ";
+    std::cout << std::setw(3) << i+1 << ": ";
     for(pos=0; pos<third_number*2; pos++) {
       if (pos == third_number) {
-        cout << " |";
+        std::cout << " |";
       }
-      cout << setw(digits) << measures[i*third_number*2+pos];
+      std::cout << std::setw(digits) << measures[i*third_number*2+pos];
     }
-    cout << endl;
+    std::cout << std::endl;
   }
 }

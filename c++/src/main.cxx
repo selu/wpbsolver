@@ -3,15 +3,13 @@
 #include <cstdlib>
 #include "problem.hxx"
 
-using namespace std;
-
 int main(int argc, char *argv[]){
   if (argc < 2) {
-    cerr << "Usage: " << argv[0] << " <measure number>" << endl;
+    std::cerr << "Usage: " << argv[0] << " <measure number>" << std::endl;
     return 1;
   }
   Problem p(atoi(argv[1]));
-  cout << "WPBSolver: " << p.getMeasureNumber() << "/" << p.getBallNumber() << endl;
+  std::cout << "WPBSolver: " << p.getMeasureNumber() << "/" << p.getBallNumber() << std::endl;
   p.generateSolutions();
   return 0;
 }
