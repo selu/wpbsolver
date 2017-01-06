@@ -7,16 +7,17 @@
 #define OUTCOME_NUMBER 3
 #define PLACE_NUMBER 3
 
-Problem::Problem(int mn) : measure_number(mn), third_number(pow(OUTCOME_NUMBER, measure_number)/6), ball_number(third_number*PLACE_NUMBER) {
+Problem::Problem(unsigned int mn) : measure_number(mn), third_number(pow(OUTCOME_NUMBER, measure_number)/6), ball_number(third_number*PLACE_NUMBER) {
 }
 
 void Problem::generateSolutions() {
-  std::vector<int> series(ball_number*measure_number);
+  std::vector<char> series(ball_number*measure_number);
   baseSeries(series);
 
-  std::vector<int> ones_start(measure_number), ones_end(measure_number);
-  int result_count = 0;
-  int i=1, level=0, pos;
+  std::vector<unsigned int> ones_start(measure_number), ones_end(measure_number);
+  unsigned int result_count=0;
+  unsigned int i=1, pos;
+  int level=0;
   ones_start[level] = i;
   while (i<ball_number) {
     if (series[measure_number*i+level] == 1) {
@@ -30,13 +31,13 @@ void Problem::generateSolutions() {
   ones_end[level] = i;
 
   level = 0;
-  std::vector<int> result(ball_number*measure_number);
+  std::vector<char> result(ball_number*measure_number);
   bool comb[measure_number];
   for (i=0; i<measure_number; i++) {
     result[i] = series[i];
     comb[i] = false;
   }
-  std::vector<int> counts(PLACE_NUMBER*measure_number);
+  std::vector<unsigned int> counts(PLACE_NUMBER*measure_number);
   std::vector<bool> mirror(ball_number);
   while (level>=0) {
     for (i=0; i<PLACE_NUMBER; i++) {
@@ -100,7 +101,7 @@ void Problem::generateSolutions() {
       level--;
     } else {
       level++;
-      if (level == measure_number) {
+      if ((unsigned int)level == measure_number) {
         result_count++;
         if (result_count % 1000000 == 0) {
 	  std::cout << "   >>> " << result_count << " <<<" << std::endl;
@@ -114,8 +115,8 @@ void Problem::generateSolutions() {
   std::cout << "Result count: " << result_count << std::endl;
 }
 
-void Problem::baseSeries(std::vector<int>& series) {
-  int i, pos = 1;
+void Problem::baseSeries(std::vector<char>& series) {
+  unsigned int i, pos = 1;
   for (i=0; i<measure_number; i++) {
     series[i] = 1;
   }
@@ -158,9 +159,9 @@ void Problem::baseSeries(std::vector<int>& series) {
   }
 }
 
-void Problem::printSeries(std::vector<int>& series) {
-  int i, pos;
-  int measures[measure_number*third_number*2];
+void Problem::printSeries(std::vector<char>& series) {
+  unsigned int i, pos;
+  std::vector<unsigned int> measures(measure_number*third_number*2);
   int digits = floor(log10(ball_number))+2;
 
   for (i=0; i<measure_number; i++) {

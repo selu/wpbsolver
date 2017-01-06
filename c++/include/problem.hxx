@@ -2,14 +2,14 @@
 
 class Problem {
 public:
-  Problem(int mn);
-  int getMeasureNumber() { return measure_number; }
-  int getBallNumber() { return ball_number; }
+  Problem(unsigned int mn);
+  unsigned int getMeasureNumber() { return measure_number; }
+  unsigned int getBallNumber() { return ball_number; }
   void generateSolutions();
 private:
-  void baseSeries(std::vector<int>& series);
-  void printSeries(std::vector<int>& series);
-  int measure_number;
-  int third_number;
-  int ball_number;
+  void baseSeries(std::vector<char>& series);
+  void printSeries(std::vector<char>& series);
+  unsigned int measure_number;
+  unsigned int third_number;
+  unsigned int ball_number;
 };
