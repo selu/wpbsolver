@@ -82,15 +82,10 @@ void Problem::generateSolutions() {
           counts[i*PLACE_NUMBER+result[measure_number*pos+i]+1]++;
         }
       }
-      for (i=(level+1)*PLACE_NUMBER; i<measure_number*PLACE_NUMBER; i++) {
-        if (counts[i] > third_number) {
-          break;
-        }
-      }
-      if (i == measure_number*PLACE_NUMBER) {
+      if (std::all_of(counts.begin()+(level+1)*PLACE_NUMBER, counts.end(), [this](unsigned int v){return v<=third_number;})) {
         break;
       } else {
-        if (!next_permutation(mirror.begin()+ones_start[level], mirror.begin()+ones_end[level])) {
+        if (!std::next_permutation(mirror.begin()+ones_start[level], mirror.begin()+ones_end[level])) {
           wrong = true;
           break;
         }
