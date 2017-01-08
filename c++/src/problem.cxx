@@ -187,4 +187,47 @@ void Problem::printSeries(std::vector<char>& series) {
     }
     std::cout << std::endl;
   }
+  if (verify(measures)) {
+    std::cout << "OK" << std::endl;
+  } else {
+    std::cout << "error!!!" << std::endl;
+  }
+}
+
+bool Problem::verify(std::vector<unsigned int>& measures) {
+  unsigned int outcomes = pow(OUTCOME_NUMBER, measure_number);
+  std::vector<unsigned char> results(ball_number*pow(OUTCOME_NUMBER, measure_number));
+  std::fill(results.begin(), results.begin()+ball_number, 3);
+  unsigned int increment = outcomes;
+  for (unsigned int level=0; level<measure_number; level++) {
+    unsigned int next_increment = increment/OUTCOME_NUMBER;
+    std::vector<unsigned int> left(third_number), right(third_number), remaining(ball_number);
+    std::vector<unsigned int>::iterator left_it = left.begin(), right_it = right.begin();
+    unsigned int num=1;
+    std::generate(remaining.begin(), remaining.end(), [&num](){return num++;});
+    for (unsigned int i=0; i<2*third_number; i++) {
+      num = measures[level*2*third_number+i];
+      *(i<third_number ? left_it : right_it)++ = num;
+      std::remove(remaining.begin(), remaining.end(), num);
+    }
+    for (unsigned int i=0; i<outcomes; i+=increment) {
+      for (unsigned int j=0; j<ball_number; j++) {
+        unsigned char p = results[ball_number*i+j];
+        if(std::find(left.begin(), left.end(), j+1) != left.end()) {
+          results[ball_number*(i+next_increment)+j] = p & 1;
+          results[ball_number*(i+2*next_increment)+j] = p & 2;
+          results[ball_number*i+j] = 0;
+        } else if(std::find(right.begin(), right.end(), j+1) != right.end()) {
+          results[ball_number*(i+next_increment)+j] = p & 2;
+          results[ball_number*(i+2*next_increment)+j] = p & 1;
+          results[ball_number*i+j] = 0;
+        } else {
+          results[ball_number*(i+next_increment)+j] = 0;
+          results[ball_number*(i+2*next_increment)+j] = 0;
+        }
+      }
+    }
+    increment = next_increment;
+  }
+  return std::all_of(results.begin(), results.end(), [](unsigned char v){return v<3;});
 }

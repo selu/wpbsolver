@@ -9,6 +9,7 @@ public:
 private:
   void baseSeries(std::vector<char>& series);
   void printSeries(std::vector<char>& series);
+  bool verify(std::vector<unsigned int>& measures);
   unsigned int measure_number;
   unsigned int third_number;
   unsigned int ball_number;
