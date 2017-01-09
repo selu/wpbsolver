@@ -9,6 +9,9 @@ int main(int argc, char *argv[]){
     return 1;
   }
   Problem p(atoi(argv[1]));
+  if (argc > 2) {
+    p.setCount(atoi(argv[2]));
+  }
   std::cout << "WPBSolver: " << p.getMeasureNumber() << "/" << p.getBallNumber() << std::endl;
   p.generateSolutions();
   return 0;

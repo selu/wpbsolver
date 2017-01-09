@@ -7,7 +7,11 @@
 #define OUTCOME_NUMBER 3
 #define PLACE_NUMBER 3
 
-Problem::Problem(unsigned int mn) : measure_number(mn), third_number(pow(OUTCOME_NUMBER, measure_number)/6), ball_number(third_number*PLACE_NUMBER) {
+Problem::Problem(unsigned int mn) : measure_number(mn), third_number(pow(OUTCOME_NUMBER, measure_number)/6), ball_number(third_number*PLACE_NUMBER), result_number(0) {
+}
+
+void Problem::setCount(unsigned int count) {
+  result_number = count;
 }
 
 void Problem::generateSolutions() {
@@ -99,10 +103,16 @@ void Problem::generateSolutions() {
       if ((unsigned int)level == measure_number) {
         result_count++;
         if (result_count % 1000000 == 0) {
-	  std::cout << "   >>> " << result_count << " <<<" << std::endl;
+          std::cout << "   >>> " << result_count << " <<<" << std::endl;
         }
-        printSeries(result);
-        break;
+        if (result_number>0) {
+          if (result_number < 10000) {
+            printSeries(result);
+          }
+          if (result_count == result_number) {
+            break;
+          }
+        }
         level--;
       }
     }
@@ -161,7 +171,7 @@ void Problem::printSeries(std::vector<char>& series) {
 
   for (i=0; i<measure_number; i++) {
     int left = 0, right = 0;
-    std::cout << std::setw(3) << i+1 << ": ";
+    std::cout << std::setw(3) << i+1 << ":  ";
     for (pos=0; pos<ball_number; pos++) {
       switch (series[pos*measure_number+i]) {
         case 1:
@@ -171,7 +181,7 @@ void Problem::printSeries(std::vector<char>& series) {
           measures[i*third_number*2+third_number+right++] = pos+1;
           break;
       }
-      std::cout << std::setw(3) << series[pos*measure_number+i];
+      std::wcout << " " << "R-L"[series[pos*measure_number+i]+1];
     }
     std::cout << std::endl;
   }
