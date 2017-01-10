@@ -262,65 +262,81 @@ module WPBSolver
     def generate_uniq_good_combinations
       return enum_for(:generate_uniq_good_combinations) unless block_given?
 
-      spart = measure_series.group_by do |s|
-        case
-        when s == [1]*s.count
-          :head
-        when s == [1]+[-1]*(s.count-1)
-          :skip
+      base = measure_series.delete_if do |s|
+        s == [1] + [-1]*(s.count-1)
+      end
+
+      ones_start = Array.new(measure_number)
+      ones_end = Array.new(measure_number)
+      j = 1
+      level = 0
+      ones_start[level] = j
+      while j<ball_number do
+        if base[j][level] == 1
+          j += 1
         else
-          s.find_index(1)
+          ones_end[level] = j
+          level += 1
+          ones_start[level] = j
         end
       end
+      ones_end[level] = j
+
+      result = base.map {|col| col.dup}
+      comb = Array.new(measure_number,false)
+      mirror = Array.new(ball_number,1)
+      counts = Array.new(measure_number) {Array.new(3)}
 
       count = 0
       result_count = 0
-      start_time = prev_time = Time.now
+      prev_time = Time.now
 
-      base = [spart[:head]]
-      comb = []
-      idx = []
       level = 0
-      loop do
-        move_to_next = false
+      while level>=0 do
         count += 1
         if count % 1000000 == 0
           next_time = Time.now
-          puts "count: #{count}, results: #{result_count}, progress: #{(100.0*idx[0]/comb[0].count).round(3)}%, est: #{count*comb[0].count/idx[0]} at #{start_time+(next_time-start_time)*comb[0].count/idx[0]}, duration: #{(next_time-prev_time).round(2)}s"
+          puts "count: #{count}, results: #{result_count}, duration: #{(next_time-prev_time).round(2)}s"
           prev_time = next_time
         end
-        break if level < 0
-        counts = base[level].each_with_object(Hash.new(0)){|e,h| h[e[level]] += 1}
-        if counts.values.any?{|c| c>@third}
+        counts[0].map!{0}
+        result[0...ones_start[level]].each{|e| counts[0][e[level]+1] += 1}
+        if counts[0].any?{|c| c>@third}
           level -= 1
           next
         end
+
+        wrong = false
         unless comb[level]
-          comb[level] = (0...spart[level].count).to_a.combination(@third-counts[-1]).to_a
-          idx[level] = 0
+          (ones_start[level]...@ball_number).each{|idx| mirror[idx] = (idx < ones_end[level]-@third+counts[0][0] ? -1 : 1)}
+          comb[level] = true
+        else
+          wrong = !mirror.next_permutation(ones_start[level], ones_end[level])
         end
-        begin
-          if idx[level] == comb[level].count
-            comb[level] = nil
-            level -= 1
-            move_to_next = true
-            break
+        while !wrong do
+          (ones_start[level]...ones_end[level]).each do |pos|
+            measure_number.times.each{|i| result[pos][i] = base[pos][i] * mirror[pos]}
           end
-          mirror = comb[level][idx[level]]
-          idx[level] += 1
-          base[level+1] = base[level]+spart[level].map.with_index do |s,i|
-            mirror.include?(i) ? s.map{|v| -v} : s
+          (level+1...measure_number).each do |i|
+            counts[i].map!{0}
+            ones_end[level].times.each do |pos|
+              counts[i][result[pos][i]+1] += 1
+            end
           end
-        end while base[level+1].each_with_object(Hash.new(0)) do |e,h|
-          (level+1...@measure_number).each{|lvl| h[e[lvl]+10*lvl] +=1}
-        end.values.any? {|c| c>@third}
-        next if move_to_next
-        level += 1
-        if level == @measure_number
-          yield base[level]
-          result_count += 1
+          break if counts[level+1..-1].all?{|a| a.all?{|c| c<=@third}}
+          wrong = !mirror.next_permutation(ones_start[level], ones_end[level])
+        end
+        if wrong
+          comb[level] = false
           level -= 1
-          next
+        else
+          level += 1
+          if level == @measure_number
+            yield result
+            result_count += 1
+            level -= 1
+            next
+          end
         end
       end
       puts "final count: #{count}"
