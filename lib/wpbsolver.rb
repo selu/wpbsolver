@@ -25,6 +25,7 @@ module WPBSolver
   end
 end
 
+require "wpbsolver/array_permutation"
 require "wpbsolver/balls"
 require "wpbsolver/measure"
 require "wpbsolver/scale"
