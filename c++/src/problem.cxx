@@ -42,7 +42,7 @@ void Problem::generateSolutions() {
     comb[i] = false;
   }
   std::vector<unsigned int> counts(PLACE_NUMBER*measure_number);
-  std::vector<bool> mirror(ball_number);
+  std::vector<int> mirror(ball_number);
   while (level>=0) {
     for (i=0; i<PLACE_NUMBER; i++) {
       counts[i] = 0;
@@ -63,11 +63,11 @@ void Problem::generateSolutions() {
     }
     wrong = false;
     if (!comb[level]) {
-      std::fill(mirror.begin()+ones_start[level], mirror.end(), false);
-      std::fill(mirror.begin()+ones_end[level]-third_number+counts[0], mirror.begin()+ones_end[level], true);
+      std::fill(mirror.begin()+ones_start[level], mirror.end(), 1);
+      std::fill(mirror.begin()+ones_end[level]-third_number+counts[0], mirror.begin()+ones_end[level], -1);
       comb[level] = true;
     } else {
-      wrong = !std::next_permutation(mirror.begin()+ones_start[level], mirror.begin()+ones_end[level]);
+      wrong = !std::prev_permutation(mirror.begin()+ones_start[level], mirror.begin()+ones_end[level]);
     }
     do {
       if (wrong) {
@@ -75,7 +75,7 @@ void Problem::generateSolutions() {
       }
       for(pos=ones_start[level]; pos<ones_end[level]; pos++) {
         for(i=0; i<measure_number; i++) {
-          result[measure_number*pos+i] = series[measure_number*pos+i] * (mirror[pos] ? -1 : 1);
+          result[measure_number*pos+i] = series[measure_number*pos+i] * mirror[pos];
         }
       }
       for (i=0; i<PLACE_NUMBER*measure_number; i++) {
@@ -89,7 +89,7 @@ void Problem::generateSolutions() {
       if (std::all_of(counts.begin()+(level+1)*PLACE_NUMBER, counts.end(), [this](unsigned int v){return v<=third_number;})) {
         break;
       } else {
-        if (!std::next_permutation(mirror.begin()+ones_start[level], mirror.begin()+ones_end[level])) {
+        if (!std::prev_permutation(mirror.begin()+ones_start[level], mirror.begin()+ones_end[level])) {
           wrong = true;
           break;
         }
