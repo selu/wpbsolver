@@ -308,10 +308,12 @@ module WPBSolver
 
         wrong = false
         unless comb[level]
-          (ones_start[level]...@ball_number).each{|idx| mirror[idx] = (idx < ones_end[level]-@third+counts[0][0] ? -1 : 1)}
+          (ones_start[level]...@ball_number).each do |idx|
+            mirror[idx] = ((ones_end[level]-@third+counts[0][0]...ones_end[level]).include?(idx) ? -1 : 1)
+          end
           comb[level] = true
         else
-          wrong = !mirror.next_permutation(ones_start[level], ones_end[level])
+          wrong = !mirror.prev_permutation(ones_start[level], ones_end[level])
         end
         while !wrong do
           (ones_start[level]...ones_end[level]).each do |pos|
@@ -324,7 +326,7 @@ module WPBSolver
             end
           end
           break if counts[level+1..-1].all?{|a| a.all?{|c| c<=@third}}
-          wrong = !mirror.next_permutation(ones_start[level], ones_end[level])
+          wrong = !mirror.prev_permutation(ones_start[level], ones_end[level])
         end
         if wrong
           comb[level] = false
