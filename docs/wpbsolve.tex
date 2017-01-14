@@ -55,8 +55,10 @@
 \usepackage{minted}
 \usepackage{tikz}
 \usetikzlibrary{trees}
+\usetikzlibrary{calc}
 \usepackage{draftwatermark}
 \SetWatermarkScale{5}
+\usepackage[markings,customcolors]{hf-tikz}
 %%% END Article customizations
 
 %%% The "real" document content comes below...
@@ -90,14 +92,15 @@ Find which ball is the odd one and if it's heavier or lighter than the rest.
 
 \section{Find one solution}
 
-\subsection{Generate possible measures}
+\subsection{Generate possible measures} \label{one_solution}
+
 At first I calculated the number of possible measures. We should put equal number of balls onto both arms to get a valid result, so pick even number of balls for measure, then pick half of the balls for Left arm and put remaining balls into Right arm. We can halve the numbers, because putting same set of balls to Right arm is same as to Left arm:
 
-\[ \sum_{i=1}^{6} \frac{\binom{12}{2i} \binom{2i}{i}}{2} = 36829 \]
+\[ \sum_{i=1}^{6} \frac{\binom{12}{2i} \binom{2i}{i}}{2} = 36894 \]
 
-All three measures can be one of the 36829 possible ones, so the number of all possible solutions could be:
+All three measures can be one of the $36894$ possible ones, so the number of all possible solutions could be:
 
-\[ 36829^3 = 49953943750789 \]
+\[ 36894^3 = 50218904004984 \]
 
 Using information above we can generate possible measures one-by-one:
 
@@ -124,11 +127,11 @@ if state_set.map(&:case_number).max > (Scale.number_of_outcomes ** max_measures)
 end
 \end{minted}
 
-\subsection{Result}
+\subsection{Result} \label{one_result}
 
 However this algorithm is almost a brute force, found the first solution within some seconds.
 
-\begin{table}[ht]
+\begin{table}[h]
 \begin{center}
 \begin{tabular}{c|cccc|cccc}
   \toprule
@@ -157,7 +160,7 @@ However this algorithm is almost a brute force, found the first solution within 
 \pgfmathsetmacro{\angleBmod}{asin(2*\leveldistance*sin(\angleB)/\longBdistance)}
 \pgfmathsetmacro{\angleCmod}{asin(3*\leveldistance*sin(\angleC)/\longCdistance)}
 
-\begin{figure}[ht]
+\begin{figure}[h]
 \begin{tikzpicture}[
   ball/.style       = {shape=circle, top color=white, minimum size=0.8cm},
   choose/.style     = {ball, bottom color=gray!30},
@@ -254,7 +257,7 @@ However this algorithm is almost a brute force, found the first solution within 
 \caption{Decision Tree}
 \end{figure}
 
-\begin{table}[ht]
+\begin{table}[h]
 \begin{center}
 \begin{tabular}{cc}
 \toprule
@@ -308,4 +311,162 @@ $<>>$ & $\emptyset$ \\
 
 \section{Find all solutions}
 
+Let's continue the calculation, what we started in subsection \ref{one_solution}.
+
+\subsection{How many different measures are possible?} \label{how_many}
+
+We have $36894^3$ case, what we have to check to find all solutions, but it is too many, so we try to reduce this number with some ideas. At first, the $3$ measures should be different, why we should do same measure twice? Also because any of the subsequent measure(s) should not depend on previous one(s), the order of them is indifferent, so we can calculate all cases as
+
+\[ \binom{36894}{3} = 8369136762844 \]
+
+This is a bit better, but also too many for check all of them. Examine, how many measures of $36894$ may lead to the right results. It seems from the solution what we found in subsection \ref{one_result} it works, when we put $\frac{1}{3}$ of the balls onto each arm.
+
+Let's see what happens, when we put less than $4$ balls. If we put $6$ balls - $3$-$3$ onto each arm - and they would be equal, we won't know anything about the remaining $6$ balls, what means $12$ possible outcomes for the remaining two measures. With less balls it could be worse, so we should measure at least $4$ balls. 
+
+Now, try to measure more than $8$ balls, in example $10$. In this case, if they are not equal, half of them can be lighter and another half of them can be heavier, what is $10$ different possible result for the remaining two measures. We can say, only those measures can work when we put $\frac{1}{3}$ of the balls onto each arm, in our case they are
+
+\[ \frac{\binom{12}{8}\binom{8}{4}}{2} = 17325 \]
+
+so all cases, what we need to check now
+
+\[ \binom{17325}{3} = 866549295150 \]
+
+It is much better than when we started, but even too many, so let's try another approach.
+
+\subsection{Series of measures by balls}
+
+Every balls can be in three position in each measures,
+\begin{itemize}
+\item ball on the left arm - with numbers $1$,
+\item ball on the right arm - $-1$,
+\item ball is not measured - $0$
+\end{itemize}
+So there are $3^3 = 27$ different series of measures, what is the repeated permutations of three positions above for $3$ measures, how a ball can be placed in the three measures. One case, when ball is not measured at all $\left[\begin{smallmatrix}0\\0\\0\end{smallmatrix}\right]$ should be left out, of course, so remained $26$ of them. We know one more thing, we should measure every balls differently, so we should simply choose $12$ different element from these $26$, what is
+
+\[ \binom{26}{12} = 9657700 \]
+
+This is much better, than any other approach and we could easily check all of them with a computer, but let's see whether we can reduce this number better.
+
+There are measure series, what are mirrors of each other, which means both balls are measured or not, and if they are measured, they are always on the opposite side of the balance, in example $\left[\begin{smallmatrix}\phantom{{}-{}}1\\-1\\\phantom{{}-{}}0\end{smallmatrix}\right]$ and $\left[\begin{smallmatrix}-1\\\phantom{{}-{}}1\\\phantom{{}-{}}0\end{smallmatrix}\right]$ are mirrors of each other. It is simply to find the mirrors, just multiply each elements by $-1$. In fact every element have mirrors, so finally we have only $\frac{26}{2} = 13$ different series of measures, see figure~\ref{fig:table_series}.
+
+\begin{figure}[h]
+\caption{Series of measures}
+\label{fig:table_series}
+\tikzset{
+   pwrong/.style={set border color=red, set fill color=red!10!white},
+   pmain/.style={set border color=green!50!black, set fill color=white},
+   pmirror/.style={set border color=blue, set fill color=blue!10!white}
+}
+\[
+\begin{array}{rrrrrrrrr}
+\tikzmarkin[pmain]{p1} \phantom{{}-{}}1 &
+\tikzmarkin[pmain]{p2} \phantom{{}-{}}1 &
+\tikzmarkin[pmain]{p3} \phantom{{}-{}}1 &
+\tikzmarkin[pmain]{p4} \phantom{{}-{}}1 &
+\tikzmarkin[pmain]{p5} \phantom{{}-{}}1 &
+\tikzmarkin[pmain]{p6} \phantom{{}-{}}1 &
+\tikzmarkin[pmain]{p7} \phantom{{}-{}}1 &
+\tikzmarkin[pmain]{p8} \phantom{{}-{}}1 &
+\tikzmarkin[pmain]{p9} \phantom{{}-{}}1 \\
+ 1 &  1 &  1 & -1 & -1 & -1 &  0 &  0 &  0 \\
+ 1 \tikzmarkend{p1} &
+-1 \tikzmarkend{p2} &
+ 0 \tikzmarkend{p3} &
+ 1 \tikzmarkend{p4} &
+-1 \tikzmarkend{p5} &
+ 0 \tikzmarkend{p6} &
+ 1 \tikzmarkend{p7} &
+-1 \tikzmarkend{p8} &
+ 0 \tikzmarkend{p9} \\
+ \\ \quad \\
+\tikzmarkin[pmirror]{m5}-1 &
+\tikzmarkin[pmirror]{m4}-1 &
+\tikzmarkin[pmirror]{m6}-1 &
+\tikzmarkin[pmirror]{m2}-1 &
+\tikzmarkin[pmirror]{m1}-1 &
+\tikzmarkin[pmirror]{m3}-1 &
+\tikzmarkin[pmirror]{m8}-1 &
+\tikzmarkin[pmirror]{m7}-1 &
+\tikzmarkin[pmirror]{m9}-1 \\
+ 1 &  1 &  1 & -1 & -1 & -1 &  0 &  0 &  0 \\
+ 1 \tikzmarkend{m5} &
+-1 \tikzmarkend{m4} &
+ 0 \tikzmarkend{m6} &
+ 1 \tikzmarkend{m2} &
+-1 \tikzmarkend{m1} &
+ 0 \tikzmarkend{m3} &
+ 1 \tikzmarkend{m8} &
+-1 \tikzmarkend{m7} &
+ 0 \tikzmarkend{m9} \\
+ \\ \quad \\
+\tikzmarkin[pmain]{p10} \phantom{{}-{}}0 &
+\tikzmarkin[pmain]{p11} \phantom{{}-{}}0 &
+\tikzmarkin[pmain]{p12} \phantom{{}-{}}0 &
+\tikzmarkin[pmirror]{m11} \phantom{{}-{}}0 &
+\tikzmarkin[pmirror]{m10} \phantom{{}-{}}0 &
+\tikzmarkin[pmirror]{m12} \phantom{{}-{}}0 &
+\tikzmarkin[pmain]{p13} \phantom{{}-{}}0 &
+\tikzmarkin[pmirror]{m13} \phantom{{}-{}}0 &
+\tikzmarkin[pwrong]{wrong} \phantom{{}-{}}0 \\
+ 1 &  1 &  1 & -1 & -1 & -1 &  0 &  0 &  0 \\
+ 1 \tikzmarkend{p10} &
+-1 \tikzmarkend{p11} &
+ 0 \tikzmarkend{p12} &
+ 1 \tikzmarkend{m11} &
+-1 \tikzmarkend{m10} &
+ 0 \tikzmarkend{m12} &
+ 1 \tikzmarkend{p13} &
+-1 \tikzmarkend{m13} &
+ 0 \tikzmarkend{wrong} 
+\end{array}
+\]
+\begin{tikzpicture}[overlay,remember picture]
+  \draw[<->,cyan,bend left] ($(p10)+(0.5,0.03)$) edge ($(m10)+(0.5,0.03)$);
+  \draw[<->,cyan,bend left] ($(p11)+(0.5,0.03)$) edge ($(m11)+(0.5,0.03)$);
+  \draw[<->,cyan,bend left] ($(p12)+(0.5,0.03)$) edge ($(m12)+(0.5,0.03)$);
+  \draw[<->,cyan,bend left] ($(p13)+(0.5,0.03)$) edge ($(m13)+(0.5,0.03)$);
+  \draw[<->,cyan] ($(p1)+(0.5,-1.53)$) edge ($(m1)+(0.5,0.03)$);
+  \draw[<->,cyan] ($(p2)+(0.5,-1.53)$) edge ($(m2)+(0.5,0.03)$);
+  \draw[<->,cyan] ($(p3)+(0.5,-1.53)$) edge ($(m3)+(0.5,0.03)$);
+  \draw[<->,cyan] ($(p4)+(0.5,-1.53)$) edge ($(m4)+(0.5,0.03)$);
+  \draw[<->,cyan] ($(p5)+(0.5,-1.53)$) edge ($(m5)+(0.5,0.03)$);
+  \draw[<->,cyan] ($(p6)+(0.5,-1.53)$) edge ($(m6)+(0.5,0.03)$);
+  \draw[<->,cyan] ($(p7)+(0.5,-1.53)$) edge ($(m7)+(0.5,0.03)$);
+  \draw[<->,cyan] ($(p8)+(0.5,-1.53)$) edge ($(m8)+(0.5,0.03)$);
+  \draw[<->,cyan] ($(p9)+(0.5,-1.53)$) edge ($(m9)+(0.5,0.03)$);
+\end{tikzpicture}
+\end{figure}
+
+In this case we can choose $12$ series of those $13$, then try any combination of their mirrored and non-mirrored version
+
+\[ \binom{13}{12}*2^{12} = 53248 \]
+
+cases in total, what is a wonderful number, but we know one more thing from subsection~\ref{how_many}. We should measure only $8$ balls in each step, the combination of chosen series of measures should have exactly $4$ zeros in each row. Because the base $13$ series have no any extra zeros, when we choose the $12$ series, the one to leave can only one of the $4$ series without any zeros. Which means our number is
+
+\[ \binom{4}{3}*2^{12} = 16384 \]
+
+If we check all these cases, we find there are only $308$ good solutions. However we can refine our calculation more, because the sum for each measure should be $0$, which means same number of balls should be on both arms of balance. So we should choose $4$ balls to mirror from the first $8$, also the last two series $\left[\begin{smallmatrix}0\\0\\1\end{smallmatrix}\right]$ and $\left[\begin{smallmatrix}\phantom{{}-{}}0\\\phantom{{}-{}}0\\-1\end{smallmatrix}\right]$ are determined by others. The other two can be anything based on the earlier values, so for then we can use $2^2$ and here is the result:
+
+\[ \binom{4}{3}*\binom{8}{4}*2^2 = 1120 \]
+
+\subsection{How many solutions are non-equivalent}
+
+\[
+\begin{bmatrix*}[r]
+1 \\ & 1 \\ && -1
+\end{bmatrix*}
+\begin{bmatrix*}[r]
+1 & 1 & 1 \\ 1 & 1 & -1 \\ 1 & -1 & 1
+\end{bmatrix*} =
+\begin{bmatrix*}[r]
+1 & 1 & 1 \\ 1 & 1 & -1 \\ -1 & 1 & -1
+\end{bmatrix*}
+\]
+
+\begin{tabular}{!{\color{Orange2}\vrule width 2pt}>{\color{RoyalBlue3}}r!{\color{Orange2}\vrule width 2pt}>{\color{RoyalBlue3}}r!{\color{Orange2}\vrule width 2pt}>{\color{RoyalBlue3}}r!{\color{Orange2}\vrule width 2pt}}
+\arrayrulecolor{Orange2}\specialrule{2pt}{0pt}{0pt}
+1 & 1 & 1 \\\arrayrulecolor{Orange2}\specialrule{2pt}{0pt}{0pt}
+1 & 1 & -1 \\\arrayrulecolor{Orange2}\specialrule{2pt}{0pt}{0pt}
+1 & -1 & 1 \\\arrayrulecolor{Orange2}\specialrule{2pt}{0pt}{0pt}
+\end{tabular}
 \end{document}

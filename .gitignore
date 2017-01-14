@@ -10,6 +10,8 @@
 /docs/*.log
 /docs/*.out
 /docs/*.aux
+/docs/*.blg
+/docs/*.bbl
 /docs/*.synctex*
 *.swp
 CMakeCache.txt
