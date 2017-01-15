@@ -51,6 +51,7 @@
 
 \usepackage{hyperref}
 \usepackage{mathtools}
+\usepackage{numprint}
 \usepackage[usenames,x11names,table]{xcolor}
 \usepackage{minted}
 \usepackage{tikz}
@@ -84,7 +85,7 @@ You have a set of balance scales which will give 3 possible readings:
 \begin{itemize}
 \item Left $=$ Right
 \item Left $>$ Right
-\item Left $<$ Right (ie Left and Right have equal weight, Left is Heavier, or Left is Lighter).
+\item Left $<$ Right (in example Left and Right have equal weight, Left is Heavier, or Left is Lighter).
 \end{itemize}
 
 You have \emph{only 3 chances} to weigh the balls in any combination using the scales.
@@ -96,11 +97,11 @@ Find which ball is the odd one and if it's heavier or lighter than the rest.
 
 At first I calculated the number of possible measures. We should put equal number of balls onto both arms to get a valid result, so pick even number of balls for measure, then pick half of the balls for Left arm and put remaining balls into Right arm. We can halve the numbers, because putting same set of balls to Right arm is same as to Left arm:
 
-\[ \sum_{i=1}^{6} \frac{\binom{12}{2i} \binom{2i}{i}}{2} = 36894 \]
+\[ \sum_{i=1}^{6} \frac{\binom{12}{2i} \binom{2i}{i}}{2} = \numprint{36894} \]
 
-All three measures can be one of the $36894$ possible ones, so the number of all possible solutions could be:
+All three measures can be one of the \numprint{36894} possible ones, so the number of all possible solutions could be:
 
-\[ 36894^3 = 50218904004984 \]
+\[ \numprint{36894}^3 = \numprint{50218904004984} \approx \numprint{5e13} \]
 
 Using information above we can generate possible measures one-by-one:
 
@@ -315,21 +316,21 @@ Let's continue the calculation, what we started in subsection \ref{one_solution}
 
 \subsection{How many different measures are possible?} \label{how_many}
 
-We have $36894^3$ case, what we have to check to find all solutions, but it is too many, so we try to reduce this number with some ideas. At first, the $3$ measures should be different, why we should do same measure twice? Also because any of the subsequent measure(s) should not depend on previous one(s), the order of them is indifferent, so we can calculate all cases as
+We have $\numprint{36894}^3$ case, what we have to check to find all solutions, but it is too many, so we try to reduce this number with some ideas. At first, the $3$ measures should be different, why we should do same measure twice? Also because any of the subsequent measure(s) should not depend on previous one(s), the order of them is indifferent, so we can calculate all cases as
 
-\[ \binom{36894}{3} = 8369136762844 \]
+\[ \binom{\numprint{36894}}{3} = \numprint{8369136762844} \approx \numprint{8.37e12} \]
 
-This is a bit better, but also too many for check all of them. Examine, how many measures of $36894$ may lead to the right results. It seems from the solution what we found in subsection \ref{one_result} it works, when we put $\frac{1}{3}$ of the balls onto each arm.
+This is a bit better, but also too many for check all of them. Examine, how many measures of $\numprint{36894}$ may lead to the right results. It seems from the solution what we found in subsection \ref{one_result} it works, when we put $\frac{1}{3}$ of the balls onto each arm.
 
 Let's see what happens, when we put less than $4$ balls. If we put $6$ balls - $3$-$3$ onto each arm - and they would be equal, we won't know anything about the remaining $6$ balls, what means $12$ possible outcomes for the remaining two measures. With less balls it could be worse, so we should measure at least $4$ balls. 
 
 Now, try to measure more than $8$ balls, in example $10$. In this case, if they are not equal, half of them can be lighter and another half of them can be heavier, what is $10$ different possible result for the remaining two measures. We can say, only those measures can work when we put $\frac{1}{3}$ of the balls onto each arm, in our case they are
 
-\[ \frac{\binom{12}{8}\binom{8}{4}}{2} = 17325 \]
+\[ \frac{\binom{12}{8}\binom{8}{4}}{2} = \numprint{17325} \]
 
 so all cases, what we need to check now
 
-\[ \binom{17325}{3} = 866549295150 \]
+\[ \binom{\numprint{17325}}{3} = \numprint{866549295150} \approx \numprint{8.67e11} \]
 
 It is much better than when we started, but even too many, so let's try another approach.
 
@@ -343,7 +344,7 @@ Every balls can be in three position in each measures,
 \end{itemize}
 So there are $3^3 = 27$ different series of measures, what is the repeated permutations of three positions above for $3$ measures, how a ball can be placed in the three measures. One case, when ball is not measured at all $\left[\begin{smallmatrix}0\\0\\0\end{smallmatrix}\right]$ should be left out, of course, so remained $26$ of them. We know one more thing, we should measure every balls differently, so we should simply choose $12$ different element from these $26$, what is
 
-\[ \binom{26}{12} = 9657700 \]
+\[ \binom{26}{12} = \numprint{9657700} \]
 
 This is much better, than any other approach and we could easily check all of them with a computer, but let's see whether we can reduce this number better.
 
@@ -439,17 +440,19 @@ There are measure series, what are mirrors of each other, which means both balls
 
 In this case we can choose $12$ series of those $13$, then try any combination of their mirrored and non-mirrored version
 
-\[ \binom{13}{12}*2^{12} = 53248 \]
+\[ \binom{13}{12} 2^{12} = \numprint{53248} \]
 
 cases in total, what is a wonderful number, but we know one more thing from subsection~\ref{how_many}. We should measure only $8$ balls in each step, the combination of chosen series of measures should have exactly $4$ zeros in each row. Because the base $13$ series have no any extra zeros, when we choose the $12$ series, the one to leave can only one of the $4$ series without any zeros. Which means our number is
 
-\[ \binom{4}{3}*2^{12} = 16384 \]
+\[ \binom{4}{3} 2^{12} = \numprint{16384} \]
 
 If we check all these cases, we find there are only $308$ good solutions. However we can refine our calculation more, because the sum for each measure should be $0$, which means same number of balls should be on both arms of balance. So we should choose $4$ balls to mirror from the first $8$, also the last two series $\left[\begin{smallmatrix}0\\0\\1\end{smallmatrix}\right]$ and $\left[\begin{smallmatrix}\phantom{{}-{}}0\\\phantom{{}-{}}0\\-1\end{smallmatrix}\right]$ are determined by others. The other two can be anything based on the earlier values, so for then we can use $2^2$ and here is the result:
 
-\[ \binom{4}{3}*\binom{8}{4}*2^2 = 1120 \]
+\[ \binom{4}{3} \binom{8}{4} 2^2 = \numprint{1120} \]
 
 \subsection{How many solutions are non-equivalent}
+
+If we check the found $308$ solutions, we can see, there are some of them, what are mirrors of another ones\ldots
 
 \[
 \begin{bmatrix*}[r]
