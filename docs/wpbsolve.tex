@@ -60,6 +60,29 @@
 \usepackage{draftwatermark}
 \SetWatermarkScale{5}
 \usepackage[markings,customcolors]{hf-tikz}
+\usepackage{fontawesome}
+\usepackage{pgfplots}
+
+% Code from Christian Feuersänger
+% http://tex.stackexchange.com/questions/54794/using-a-pgfplots-style-legend-in-a-plain-old-tikzpicture#54834
+
+% argument #1: any options
+\newenvironment{customlegend}[1][]{%
+    \begingroup
+    % inits/clears the lists (which might be populated from previous
+    % axes):
+    \csname pgfplots@init@cleared@structures\endcsname
+    \pgfplotsset{#1}%
+}{%
+    % draws the legend:
+    \csname pgfplots@createlegend\endcsname
+    \endgroup
+}%
+
+% makes \addlegendimage available (typically only available within an
+% axis environment):
+\def\addlegendimage{\csname pgfplots@addlegendimage\endcsname}
+
 %%% END Article customizations
 
 %%% The "real" document content comes below...
@@ -152,8 +175,8 @@ However this algorithm is almost a brute force, found the first solution within 
 \pgfmathsetmacro{\angleC}{360/27}
 \newlength{\leveldistance}\newlength{\longBdistance}\newlength{\longCdistance}
 \newlength{\discthick}
-\pgfmathsetlength{\leveldistance}{2cm}
-\pgfmathsetlength{\discthick}{0.5cm}
+\pgfmathsetlength{\leveldistance}{1.6cm}
+\pgfmathsetlength{\discthick}{0.8cm}
 \pgfmathsetlength{\longBdistance}{sqrt((2*\leveldistance*sin(\angleB))^2
                      +(2*\leveldistance*cos(\angleB)-\leveldistance)^2)}
 \pgfmathsetlength{\longCdistance}{sqrt((3*\leveldistance*sin(\angleC))^2
@@ -164,10 +187,13 @@ However this algorithm is almost a brute force, found the first solution within 
 \begin{figure}[h]
 \begin{tikzpicture}[
   ball/.style       = {shape=circle, top color=white, minimum size=0.8cm},
-  choose/.style     = {ball, bottom color=gray!30},
-  heavy/.style      = {ball, bottom color=red!30},
-  light/.style      = {ball, bottom color=blue!30},
-  nothing/.style    = {ball, bottom color=magenta!30},
+  small/.style       = {minimum size=0.5cm},
+  choose1/.style     = {ball, top color=brown!30!white, bottom color=brown!70!black, text=yellow!30!white},
+  choose2/.style     = {ball, top color=brown!40!white, bottom color=brown!60!black, text=yellow!30!white},
+  choose3/.style     = {ball, top color=brown!50!white, bottom color=brown!50!black, text=yellow!30!white},
+  heavy/.style      = {ball, bottom color=red!50!black, top color=red!30!white, text=white},
+  light/.style      = {ball, top color=blue!10, bottom color=blue!30},
+  nothing/.style    = {ball, bottom color=magenta!30!black, top color=magenta!30!white},
   heavier/.style    = {draw=red, ->},
   lighter/.style    = {draw=blue, ->},
   equal/.style      = {draw=gray, ->},
@@ -189,21 +215,21 @@ However this algorithm is almost a brute force, found the first solution within 
       circle(\leveldistance*\i+\discthick)
       circle(\leveldistance*\i-\discthick);
 }
-\node [choose] (l1) {}
-  child { node [choose] (l13) {}
-    child [long2] { node [choose] (l133) {}
+\node [choose1] (l1) {\faBalanceScale}
+  child { node [choose2] (l13) {\faBalanceScale}
+    child [long2] { node [choose3] (l133) {\faBalanceScale}
       child [lightrot,long3] { node [light] {1} edge from parent [lighter] }
       child [lightrot] { node [light] {3} edge from parent [equal] }
       child [lightrot,long3] { node [light] {2} edge from parent [heavier] }
       edge from parent [lighter]
     }
-    child { node [choose] (l132) {} 
+    child { node [choose3] (l132) {\faBalanceScale} 
       child [long3] { node [heavy] {7} edge from parent [lighter] }
       child { node [heavy] {8} edge from parent [equal] }
       child [long3] { node [heavy] {6} edge from parent [heavier] }
       edge from parent [equal]
     }
-    child [long2] { node [choose] (l131) {} 
+    child [long2] { node [choose3] (l131) {\faBalanceScale} 
       child [heavyrot,long3] { node [light] {4} edge from parent [lighter] }
       child [heavyrot] { node [heavy] {5} edge from parent [equal] }
       child [heavyrot,long3] { node [nothing] {} edge from parent [heavier] }
@@ -211,20 +237,20 @@ However this algorithm is almost a brute force, found the first solution within 
     }
     edge from parent [lighter]
   }
-  child { node [choose] (l12) {}
-    child [long2] { node [choose] (l123) {} 
+  child { node [choose2] (l12) {\faBalanceScale}
+    child [long2] { node [choose3] (l123) {\faBalanceScale} 
       child [lightrot,long3] { node [heavy] {10} edge from parent [lighter] }
       child [lightrot] { node [heavy] {11} edge from parent [equal] }
       child [lightrot,long3] { node [heavy] {9} edge from parent [heavier] }
       edge from parent [lighter]
     }
-    child { node [choose] (l122) {} 
+    child { node [choose3] (l122) {\faBalanceScale} 
       child [long3] { node [heavy] {12} edge from parent [lighter] }
       child { node [nothing] {} edge from parent [equal] }
       child [long3] { node [light] {12} edge from parent [heavier] }
       edge from parent [equal]
     }
-    child [long2] { node [choose] (l121) {} 
+    child [long2] { node [choose3] (l121) {\faBalanceScale} 
       child [heavyrot,long3] { node [light] {9} edge from parent [lighter] }
       child [heavyrot] { node [light] {11} edge from parent [equal] }
       child [heavyrot,long3] { node [light] {10} edge from parent [heavier] }
@@ -232,20 +258,20 @@ However this algorithm is almost a brute force, found the first solution within 
     }
     edge from parent [equal]
   }
-  child { node [choose] (l11) {}
-    child [long2] { node [choose] (l113) {}
+  child { node [choose2] (l11) {\faBalanceScale}
+    child [long2] { node [choose3] (l113) {\faBalanceScale}
       child [lightrot,long3] { node [nothing] {} edge from parent [lighter] }
       child [lightrot] { node [light] {5} edge from parent [equal] }
       child [lightrot,long3] { node [heavy] {4} edge from parent [heavier] }
       edge from parent [lighter]
     }
-    child { node [choose] (l112) {}
+    child { node [choose3] (l112) {\faBalanceScale}
       child [long3] { node [light] {6} edge from parent [lighter] }
       child { node [light] {8} edge from parent [equal] }
       child [long3] { node [light] {7} edge from parent [heavier] }
       edge from parent [equal]
     }
-    child [long2] { node [choose] (l111) {}
+    child [long2] { node [choose3] (l111) {\faBalanceScale}
       child [heavyrot,long3] { node [heavy] {2} edge from parent [lighter] }
       child [heavyrot] { node [heavy] {3} edge from parent [equal] }
       child [heavyrot,long3] { node [heavy] {1} edge from parent [heavier] }
@@ -254,12 +280,39 @@ However this algorithm is almost a brute force, found the first solution within 
     edge from parent [heavier]
   }
   ;
+\pgfplotsset{
+    legend ball with text/.style n args={2}{
+        legend image code/.code={%
+            \node[#2,small] {#1};
+        }
+    },
+	}
+\begin{customlegend}[legend cell align=left, %<= to align cells
+legend entries={ % <= in the following there are the entries
+left heavier,
+left lighter,
+equal,
+heavier ball,
+lighter ball,
+impossible
+},
+legend style={at={(7.5,-2.5)},font=\footnotesize}] % <= to define position and font legend
+% the following are the "images" and numbers in the legend
+    \addlegendimage{heavier}
+    \addlegendimage{lighter}
+    \addlegendimage{equal}
+    \addlegendimage{legend ball with text={1}{heavy}}
+    \addlegendimage{legend ball with text={2}{light}}
+    \addlegendimage{legend ball with text={}{nothing}}
+\end{customlegend}
 \end{tikzpicture}
 \caption{Decision Tree}
 \end{figure}
 
 \begin{table}[h]
 \begin{center}
+\begin{tabular}{ccc}
+
 \begin{tabular}{cc}
 \toprule
 Measures & Result \\
@@ -276,6 +329,14 @@ $<<=$ & $\downarrow 3$ \\
 $><>$ & $\uparrow 4$ \\
 $<><$ & $\downarrow 4$ \\
 
+$===$ & $\emptyset$ \\
+\bottomrule
+\end{tabular} 
+&
+\begin{tabular}{cc}
+\toprule
+Measures & Result \\
+\midrule
 $<>=$ & $\uparrow 5$ \\
 $><=$ & $\downarrow 5$ \\
 
@@ -288,6 +349,14 @@ $>=>$ & $\downarrow 7$ \\
 $<==$ & $\uparrow 8$ \\
 $>==$ & $\downarrow 8$ \\
 
+$><<$ & $\emptyset$ \\
+\bottomrule
+\end{tabular} 
+&
+\begin{tabular}{cc}
+\toprule
+Measures & Result \\
+\midrule
 $=<>$ & $\uparrow 9$ \\
 $=><$ & $\downarrow 9$ \\
 
@@ -300,11 +369,10 @@ $=>=$ & $\downarrow 11$ \\
 $==<$ & $\uparrow 12$ \\
 $==>$ & $\downarrow 12$ \\
 
-$===$ & $\emptyset$ \\
-$><<$ & $\emptyset$ \\
 $<>>$ & $\emptyset$ \\
-
 \bottomrule
+\end{tabular}
+
 \end{tabular}
 \end{center}
 \caption{Results}
