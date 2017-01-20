@@ -13,8 +13,9 @@
 % See the LaTeX Companion or other references for full information.
 
 %%% PAGE DIMENSIONS
-\usepackage{geometry} % to change the page dimensions
+\usepackage[scale=0.8]{geometry} % to change the page dimensions
 \geometry{a4paper} % or letterpaper (US) or a5paper or....
+\geometry{showframe}
 % \geometry{margin=2in} % for example, change the margins to 2 inches all round
 % \geometry{landscape} % set up the page for landscape
 %   read geometry.pdf for detailed page layout information
@@ -49,7 +50,7 @@
 \renewcommand{\cftsecfont}{\rmfamily\mdseries\upshape}
 \renewcommand{\cftsecpagefont}{\rmfamily\mdseries\upshape} % No bold!
 
-\usepackage{hyperref}
+\usepackage[colorlinks]{hyperref}
 \usepackage{mathtools}
 \usepackage{numprint}
 \usepackage[usenames,x11names,table]{xcolor}
@@ -58,9 +59,11 @@
 \usetikzlibrary{trees}
 \usetikzlibrary{calc}
 \usepackage{draftwatermark}
-\SetWatermarkScale{5}
+\SetWatermarkScale{3}
 \usepackage[markings,customcolors]{hf-tikz}
 \usepackage{fontawesome}
+%\usepackage{fontspec}
+%\fontspec{FontAwesome}
 \usepackage{pgfplots}
 
 % Code from Christian Feuersänger
@@ -90,7 +93,7 @@
 \title{Solve Weighing Pool Ball Puzzle}
 \author{Szabolcs Seláf \\ \texttt{selu@selu.org}}
 %\date{} % Activate to display a given date or no date (if empty),
-         % otherwise the current date is printed 
+         % otherwise the current date is printed
 
 \begin{document}
 \maketitle
@@ -105,11 +108,11 @@ You have 12 balls identical in size and appearance but 1 is an odd weight (could
 
 You have a set of balance scales which will give 3 possible readings:
 
-\begin{itemize}
+\begin{asparaitem}
 \item Left $=$ Right
 \item Left $>$ Right
 \item Left $<$ Right (in example Left and Right have equal weight, Left is Heavier, or Left is Lighter).
-\end{itemize}
+\end{asparaitem}
 
 You have \emph{only 3 chances} to weigh the balls in any combination using the scales.
 Find which ball is the odd one and if it's heavier or lighter than the rest.
@@ -223,13 +226,13 @@ However this algorithm is almost a brute force, found the first solution within 
       child [lightrot,long3] { node [light] {2} edge from parent [heavier] }
       edge from parent [lighter]
     }
-    child { node [choose3] (l132) {\faBalanceScale} 
+    child { node [choose3] (l132) {\faBalanceScale}
       child [long3] { node [heavy] {7} edge from parent [lighter] }
       child { node [heavy] {8} edge from parent [equal] }
       child [long3] { node [heavy] {6} edge from parent [heavier] }
       edge from parent [equal]
     }
-    child [long2] { node [choose3] (l131) {\faBalanceScale} 
+    child [long2] { node [choose3] (l131) {\faBalanceScale}
       child [heavyrot,long3] { node [light] {4} edge from parent [lighter] }
       child [heavyrot] { node [heavy] {5} edge from parent [equal] }
       child [heavyrot,long3] { node [nothing] {} edge from parent [heavier] }
@@ -238,19 +241,19 @@ However this algorithm is almost a brute force, found the first solution within 
     edge from parent [lighter]
   }
   child { node [choose2] (l12) {\faBalanceScale}
-    child [long2] { node [choose3] (l123) {\faBalanceScale} 
+    child [long2] { node [choose3] (l123) {\faBalanceScale}
       child [lightrot,long3] { node [heavy] {10} edge from parent [lighter] }
       child [lightrot] { node [heavy] {11} edge from parent [equal] }
       child [lightrot,long3] { node [heavy] {9} edge from parent [heavier] }
       edge from parent [lighter]
     }
-    child { node [choose3] (l122) {\faBalanceScale} 
+    child { node [choose3] (l122) {\faBalanceScale}
       child [long3] { node [heavy] {12} edge from parent [lighter] }
       child { node [nothing] {} edge from parent [equal] }
       child [long3] { node [light] {12} edge from parent [heavier] }
       edge from parent [equal]
     }
-    child [long2] { node [choose3] (l121) {\faBalanceScale} 
+    child [long2] { node [choose3] (l121) {\faBalanceScale}
       child [heavyrot,long3] { node [light] {9} edge from parent [lighter] }
       child [heavyrot] { node [light] {11} edge from parent [equal] }
       child [heavyrot,long3] { node [light] {10} edge from parent [heavier] }
@@ -288,6 +291,7 @@ However this algorithm is almost a brute force, found the first solution within 
     },
 	}
 \begin{customlegend}[legend cell align=left, %<= to align cells
+legend style={rounded corners=5pt},
 legend entries={ % <= in the following there are the entries
 left heavier,
 left lighter,
@@ -331,7 +335,7 @@ $<><$ & $\downarrow 4$ \\
 
 $===$ & $\emptyset$ \\
 \bottomrule
-\end{tabular} 
+\end{tabular}
 &
 \begin{tabular}{cc}
 \toprule
@@ -351,7 +355,7 @@ $>==$ & $\downarrow 8$ \\
 
 $><<$ & $\emptyset$ \\
 \bottomrule
-\end{tabular} 
+\end{tabular}
 &
 \begin{tabular}{cc}
 \toprule
@@ -390,7 +394,7 @@ We have $\numprint{36894}^3$ case, what we have to check to find all solutions, 
 
 This is a bit better, but also too many for check all of them. Examine, how many measures of $\numprint{36894}$ may lead to the right results. It seems from the solution what we found in subsection \ref{one_result} it works, when we put $\frac{1}{3}$ of the balls onto each arm.
 
-Let's see what happens, when we put less than $4$ balls. If we put $6$ balls - $3$-$3$ onto each arm - and they would be equal, we won't know anything about the remaining $6$ balls, what means $12$ possible outcomes for the remaining two measures. With less balls it could be worse, so we should measure at least $4$ balls. 
+Let's see what happens, when we put less than $4$ balls. If we put $6$ balls - $3$-$3$ onto each arm - and they would be equal, we won't know anything about the remaining $6$ balls, what means $12$ possible outcomes for the remaining two measures. With less balls it could be worse, so we should measure at least $4$ balls.
 
 Now, try to measure more than $8$ balls, in example $10$. In this case, if they are not equal, half of them can be lighter and another half of them can be heavier, what is $10$ different possible result for the remaining two measures. We can say, only those measures can work when we put $\frac{1}{3}$ of the balls onto each arm, in our case they are
 
@@ -405,11 +409,11 @@ It is much better than when we started, but even too many, so let's try another 
 \subsection{Series of measures by balls}
 
 Every balls can be in three position in each measures,
-\begin{itemize}
+\begin{asparaitem}
 \item ball on the left arm - with numbers $1$,
 \item ball on the right arm - $-1$,
 \item ball is not measured - $0$
-\end{itemize}
+\end{asparaitem}
 So there are $3^3 = 27$ different series of measures, what is the repeated permutations of three positions above for $3$ measures, how a ball can be placed in the three measures. One case, when ball is not measured at all $\left[\begin{smallmatrix}0\\0\\0\end{smallmatrix}\right]$ should be left out, of course, so remained $26$ of them. We know one more thing, we should measure every balls differently, so we should simply choose $12$ different element from these $26$, what is
 
 \[ \binom{26}{12} = \numprint{9657700} \]
@@ -422,9 +426,9 @@ There are measure series, what are mirrors of each other, which means both balls
 \caption{Series of measures}
 \label{fig:table_series}
 \tikzset{
-   pwrong/.style={set border color=red, set fill color=red!10!white},
+   pwrong/.style={set border color=red, set fill color=red!5!white},
    pmain/.style={set border color=green!50!black, set fill color=white},
-   pmirror/.style={set border color=blue, set fill color=blue!10!white}
+   pmirror/.style={set border color=blue, set fill color=blue!5!white}
 }
 \[
 \begin{array}{rrrrrrrrr}
@@ -448,24 +452,24 @@ There are measure series, what are mirrors of each other, which means both balls
 -1 \tikzmarkend{p8} &
  0 \tikzmarkend{p9} \\
  \\ \quad \\
-\tikzmarkin[pmirror]{m5}-1 &
-\tikzmarkin[pmirror]{m4}-1 &
-\tikzmarkin[pmirror]{m6}-1 &
-\tikzmarkin[pmirror]{m2}-1 &
-\tikzmarkin[pmirror]{m1}-1 &
-\tikzmarkin[pmirror]{m3}-1 &
-\tikzmarkin[pmirror]{m8}-1 &
-\tikzmarkin[pmirror]{m7}-1 &
-\tikzmarkin[pmirror]{m9}-1 \\
- 1 &  1 &  1 & -1 & -1 & -1 &  0 &  0 &  0 \\
- 1 \tikzmarkend{m5} &
--1 \tikzmarkend{m4} &
- 0 \tikzmarkend{m6} &
- 1 \tikzmarkend{m2} &
+\tikzmarkin[pmirror]{m1} -1 &
+\tikzmarkin[pmirror]{m2} -1 &
+\tikzmarkin[pmirror]{m3} -1 &
+\tikzmarkin[pmirror]{m4} -1 &
+\tikzmarkin[pmirror]{m5} -1 &
+\tikzmarkin[pmirror]{m6} -1 &
+\tikzmarkin[pmirror]{m7} -1 &
+\tikzmarkin[pmirror]{m8} -1 &
+\tikzmarkin[pmirror]{m9} -1 \\
+-1 & -1 & -1 &  1 &  1 &  1 &  0 &  0 &  0 \\
 -1 \tikzmarkend{m1} &
+ 1 \tikzmarkend{m2} &
  0 \tikzmarkend{m3} &
- 1 \tikzmarkend{m8} &
--1 \tikzmarkend{m7} &
+-1 \tikzmarkend{m4} &
+ 1 \tikzmarkend{m5} &
+ 0 \tikzmarkend{m6} &
+ 1 \tikzmarkend{m7} &
+-1 \tikzmarkend{m8} &
  0 \tikzmarkend{m9} \\
  \\ \quad \\
 \tikzmarkin[pmain]{p10} \phantom{{}-{}}0 &
@@ -486,7 +490,7 @@ There are measure series, what are mirrors of each other, which means both balls
  0 \tikzmarkend{m12} &
  1 \tikzmarkend{p13} &
 -1 \tikzmarkend{m13} &
- 0 \tikzmarkend{wrong} 
+ 0 \tikzmarkend{wrong}
 \end{array}
 \]
 \begin{tikzpicture}[overlay,remember picture]
