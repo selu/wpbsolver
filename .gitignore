@@ -7,12 +7,8 @@
 /pkg/
 /spec/reports/
 /tmp/
-/docs/*.log
-/docs/*.out
-/docs/*.aux
-/docs/*.blg
-/docs/*.bbl
-/docs/*.synctex*
+/docs/build
+_minted-*
 *.swp
 CMakeCache.txt
 CMakeFiles

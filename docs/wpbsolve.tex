@@ -15,7 +15,7 @@
 %%% PAGE DIMENSIONS
 \usepackage[scale=0.8]{geometry} % to change the page dimensions
 \geometry{a4paper} % or letterpaper (US) or a5paper or....
-\geometry{showframe}
+% \geometry{showframe}
 % \geometry{margin=2in} % for example, change the margins to 2 inches all round
 % \geometry{landscape} % set up the page for landscape
 %   read geometry.pdf for detailed page layout information
@@ -54,7 +54,9 @@
 \usepackage{mathtools}
 \usepackage{numprint}
 \usepackage[usenames,x11names,table]{xcolor}
+\definecolor{mintbg}{rgb}{1,1,0.9}
 \usepackage{minted}
+\usemintedstyle{friendly}
 \usepackage{tikz}
 \usetikzlibrary{trees}
 \usetikzlibrary{calc}
@@ -131,7 +133,8 @@ All three measures can be one of the \numprint{36894} possible ones, so the numb
 
 Using information above we can generate possible measures one-by-one:
 
-\begin{minted}{ruby}
+\begin{listing}
+\begin{minted}[bgcolor=Ivory1]{ruby}
 ids = (1..12).to_a                          # array [1, 2, .., 12] for balls
 (1..6).each do |level|                      # how much balls to put on an arm
   ids.combination(level*2).each do |subset| # pick a combination for both arms
@@ -140,7 +143,10 @@ ids = (1..12).to_a                          # array [1, 2, .., 12] for balls
       next if reverse.include?(left)         # go to next if reversed already
       right = subset - left                  # checked
       reverse << right
+      \vdots
 \end{minted}
+\caption{Generate all possible measures without mirrored ones}
+\end{listing}
 
 \subsection{Backtracking}
 
@@ -148,11 +154,14 @@ At start any of the 12 balls can be heavier or lighter than others, which means 
 
 The program uses this knowledge to give up, once there is a possible outcome of a measure with more different cases, than that can be eliminated by the remaining steps.
 
-\begin{minted}{ruby}
+\begin{listing}
+\begin{minted}[bgcolor=Ivory1]{ruby}
 if state_set.map(&:case_number).max > (Scale.number_of_outcomes ** max_measures)
   return
 end
 \end{minted}
+\caption{Prevent to look further when solution cannot be valid}
+\end{listing}
 
 \subsection{Result} \label{one_result}
 
@@ -235,7 +244,7 @@ However this algorithm is almost a brute force, found the first solution within 
     child [long2] { node [choose3] (l131) {\faBalanceScale}
       child [heavyrot,long3] { node [light] {4} edge from parent [lighter] }
       child [heavyrot] { node [heavy] {5} edge from parent [equal] }
-      child [heavyrot,long3] { node [nothing] {} edge from parent [heavier] }
+      child [heavyrot,long3] { node [nothing] {\faTimes} edge from parent [heavier] }
       edge from parent [heavier]
     }
     edge from parent [lighter]
@@ -249,7 +258,7 @@ However this algorithm is almost a brute force, found the first solution within 
     }
     child { node [choose3] (l122) {\faBalanceScale}
       child [long3] { node [heavy] {12} edge from parent [lighter] }
-      child { node [nothing] {} edge from parent [equal] }
+      child { node [nothing] {\faTimes} edge from parent [equal] }
       child [long3] { node [light] {12} edge from parent [heavier] }
       edge from parent [equal]
     }
@@ -263,7 +272,7 @@ However this algorithm is almost a brute force, found the first solution within 
   }
   child { node [choose2] (l11) {\faBalanceScale}
     child [long2] { node [choose3] (l113) {\faBalanceScale}
-      child [lightrot,long3] { node [nothing] {} edge from parent [lighter] }
+      child [lightrot,long3] { node [nothing] {\faTimes} edge from parent [lighter] }
       child [lightrot] { node [light] {5} edge from parent [equal] }
       child [lightrot,long3] { node [heavy] {4} edge from parent [heavier] }
       edge from parent [lighter]
@@ -300,14 +309,14 @@ heavier ball,
 lighter ball,
 impossible
 },
-legend style={at={(7.5,-2.5)},font=\footnotesize}] % <= to define position and font legend
+legend style={at={(8.5,-1.5)},font=\footnotesize}] % <= to define position and font legend
 % the following are the "images" and numbers in the legend
     \addlegendimage{heavier}
     \addlegendimage{lighter}
     \addlegendimage{equal}
     \addlegendimage{legend ball with text={1}{heavy}}
     \addlegendimage{legend ball with text={2}{light}}
-    \addlegendimage{legend ball with text={}{nothing}}
+    \addlegendimage{legend ball with text={\faTimes}{nothing}}
 \end{customlegend}
 \end{tikzpicture}
 \caption{Decision Tree}
@@ -333,7 +342,7 @@ $<<=$ & $\downarrow 3$ \\
 $><>$ & $\uparrow 4$ \\
 $<><$ & $\downarrow 4$ \\
 
-$===$ & $\emptyset$ \\
+$===$ & $\emptyset$\footnotemark \\
 \bottomrule
 \end{tabular}
 &
@@ -379,8 +388,9 @@ $<>>$ & $\emptyset$ \\
 
 \end{tabular}
 \end{center}
-\caption{Results}
+\caption{Results.}
 \end{table}
+\footnotetext{It's impossible}
 
 \section{Find all solutions}
 
