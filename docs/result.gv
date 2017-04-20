@@ -1,0 +1,95 @@
+digraph G {
+  layout="twopi";
+  bgcolor="transparent";
+  node [shape="circle", fixedsize=true, width="0.6", fillcolor="white", style="filled", color="grey"];
+  start [label=""];
+  lev1_g [label=">"];
+  lev1_e [label="="];
+  lev1_l [label="<"];
+  lev2_gg [label=">"];
+  lev2_ge [label="="];
+  lev2_gl [label="<"];
+  lev2_eg [label=">"];
+  lev2_ee [label="="];
+  lev2_el [label="<"];
+  lev2_lg [label=">"];
+  lev2_le [label="="];
+  lev2_ll [label="<"];
+
+  node [color="magenta", label="Ø"];
+  lev3_gll;
+  lev3_eee;
+  lev3_lgg;
+
+  node [color="red", fontcolor="red"];
+  lev3_ggg [label="1"];
+  lev3_ggl [label="2"];
+  lev3_gge [label="3"];
+  lev3_glg [label="4"];
+  lev3_lge [label="5"];
+  lev3_leg [label="6"];
+  lev3_lel [label="7"];
+  lev3_lee [label="8"];
+  lev3_elg [label="9"];
+  lev3_ell [label="10"];
+  lev3_ele [label="11"];
+  lev3_eel [label="12"];
+
+  node [color="blue", fontcolor="blue"];
+  lev3_lll [label="1"];
+  lev3_llg [label="2"];
+  lev3_lle [label="3"];
+  lev3_lgl [label="4"];
+  lev3_gle [label="5"];
+  lev3_gel [label="6"];
+  lev3_geg [label="7"];
+  lev3_gee [label="8"];
+  lev3_egl [label="9"];
+  lev3_egg [label="10"];
+  lev3_ege [label="11"];
+  lev3_eeg [label="12"];
+
+  start -> lev1_e;
+  lev1_g -> lev2_ge;
+  lev1_e -> lev2_ee;
+  lev1_l -> lev2_le;
+  lev2_gg -> lev3_gge;
+  lev2_ge -> lev3_gee;
+  lev2_gl -> lev3_gle;
+  lev2_eg -> lev3_ege;
+  lev2_ee -> lev3_eee;
+  lev2_el -> lev3_ele;
+  lev2_lg -> lev3_lge;
+  lev2_le -> lev3_lee;
+  lev2_ll -> lev3_lle;
+
+  edge [color="red"];
+  start -> lev1_g;
+  lev1_g -> lev2_gg;
+  lev1_e -> lev2_eg;
+  lev1_l -> lev2_lg;
+  lev2_gg -> lev3_ggg;
+  lev2_ge -> lev3_geg;
+  lev2_gl -> lev3_glg;
+  lev2_eg -> lev3_egg;
+  lev2_ee -> lev3_eeg;
+  lev2_el -> lev3_elg;
+  lev2_lg -> lev3_lgg;
+  lev2_le -> lev3_leg;
+  lev2_ll -> lev3_llg;
+
+  edge [color="blue"];
+  start -> lev1_l;
+  lev1_g -> lev2_gl;
+  lev1_e -> lev2_el;
+  lev1_l -> lev2_ll;
+  lev2_gg -> lev3_ggl;
+  lev2_ge -> lev3_gel;
+  lev2_gl -> lev3_gll;
+  lev2_eg -> lev3_egl;
+  lev2_ee -> lev3_eel;
+  lev2_el -> lev3_ell;
+  lev2_lg -> lev3_lgl;
+  lev2_le -> lev3_lel;
+  lev2_ll -> lev3_lll;
+}
