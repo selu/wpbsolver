@@ -1,22 +1,31 @@
 digraph G {
   layout="twopi";
   bgcolor="transparent";
-  node [shape="circle", fixedsize=true, width="0.6", fillcolor="white", style="filled", color="grey"];
-  start [label=""];
-  lev1_g [label=">"];
-  lev1_e [label="="];
-  lev1_l [label="<"];
-  lev2_gg [label=">"];
-  lev2_ge [label="="];
-  lev2_gl [label="<"];
-  lev2_eg [label=">"];
-  lev2_ee [label="="];
-  lev2_el [label="<"];
-  lev2_lg [label=">"];
-  lev2_le [label="="];
-  lev2_ll [label="<"];
+  node [
+    shape="circle",
+    fixedsize=true,
+    width="0.6",
+    fillcolor="white",
+    style="filled",
+    color="grey",
+    fontcolor="grey",
+    label="⚖"
+  ];
+  start;
+  lev1_g;
+  lev1_e;
+  lev1_l;
+  lev2_gg;
+  lev2_ge;
+  lev2_gl;
+  lev2_eg;
+  lev2_ee;
+  lev2_el;
+  lev2_lg;
+  lev2_le;
+  lev2_ll;
 
-  node [color="magenta", label="Ø"];
+  node [color="magenta", label="Ø", fontcolor="magenta"];
   lev3_gll;
   lev3_eee;
   lev3_lgg;
@@ -100,14 +109,20 @@ digraph G {
       <tr><td align="right" port="h">&nbsp;</td></tr>
       <tr><td align="right" port="e">&nbsp;</td></tr>
       <tr><td align="right" port="l">&nbsp;</td></tr>
+      <tr><td align="left"><font color="red">①</font></td></tr>
+      <tr><td align="left"><font color="blue">②</font></td></tr>
+      <tr><td align="left"><font color="magenta">∅</font></td></tr>
       </table>>]
     key [label=<<table border="0" cellpadding="2" cellspacing="0" cellborder="0">
-      <tr><td align="right" port="h">heavyer</td></tr>
+      <tr><td align="right" port="h">left heavier</td></tr>
       <tr><td align="right" port="e">equal</td></tr>
-      <tr><td align="right" port="l">lighter</td></tr>
+      <tr><td align="right" port="l">left lighter</td></tr>
+      <tr><td align="right" port="bh">heavier ball</td></tr>
+      <tr><td align="right" port="bl">lighter ball</td></tr>
+      <tr><td align="right" port="bi">impossible</td></tr>
       </table>>]
-    key:h:e -> key2:h:w [color="red"];
-    key:e:e -> key2:e:w [color="black"];
-    key:l:e -> key2:l:w [color="blue"];
+    key:h:e -> key2:h:e [color="red"];
+    key:e:e -> key2:e:e [color="black"];
+    key:l:e -> key2:l:e [color="blue"];
   }
 }
