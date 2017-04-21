@@ -1,6 +1,7 @@
 digraph G {
   layout="twopi";
   bgcolor="transparent";
+
   node [
     shape="circle",
     fixedsize=true,
@@ -25,38 +26,42 @@ digraph G {
   lev2_le;
   lev2_ll;
 
-  node [color="magenta", label="Ø", fontcolor="magenta"];
-  lev3_gll;
-  lev3_eee;
-  lev3_lgg;
 
-  node [color="red", fontcolor="red"];
-  lev3_ggg [label="1"];
-  lev3_ggl [label="2"];
-  lev3_gge [label="3"];
-  lev3_glg [label="4"];
-  lev3_lge [label="5"];
-  lev3_leg [label="6"];
-  lev3_lel [label="7"];
-  lev3_lee [label="8"];
-  lev3_elg [label="9"];
-  lev3_ell [label="10"];
-  lev3_ele [label="11"];
-  lev3_eel [label="12"];
+  lev3_ggg [label="1", color="red", fontcolor="red"];
+  lev3_gge [label="3", color="red", fontcolor="red"];
+  lev3_ggl [label="2", color="red", fontcolor="red"];
 
-  node [color="blue", fontcolor="blue"];
-  lev3_lll [label="1"];
-  lev3_llg [label="2"];
-  lev3_lle [label="3"];
-  lev3_lgl [label="4"];
-  lev3_gle [label="5"];
-  lev3_gel [label="6"];
-  lev3_geg [label="7"];
-  lev3_gee [label="8"];
-  lev3_egl [label="9"];
-  lev3_egg [label="10"];
-  lev3_ege [label="11"];
-  lev3_eeg [label="12"];
+  lev3_geg [label="7", color="blue", fontcolor="blue"];
+  lev3_gee [label="8", color="blue", fontcolor="blue"];
+  lev3_gel [label="6", color="blue", fontcolor="blue"];
+
+  lev3_glg [label="4", color="red", fontcolor="red"];
+  lev3_gle [label="5", color="blue", fontcolor="blue"];
+  lev3_gll [label="Ø", color="magenta", fontcolor="magenta"];
+
+  lev3_egg [label="10", color="blue", fontcolor="blue"];
+  lev3_ege [label="11", color="blue", fontcolor="blue"];
+  lev3_egl [label="9", color="blue", fontcolor="blue"];
+
+  lev3_eeg [label="12", color="blue", fontcolor="blue"];
+  lev3_eee [label="Ø", color="magenta", fontcolor="magenta"];
+  lev3_eel [label="12", color="red", fontcolor="red"];
+
+  lev3_elg [label="9", color="red", fontcolor="red"];
+  lev3_ele [label="11", color="red", fontcolor="red"];
+  lev3_ell [label="10", color="red", fontcolor="red"];
+
+  lev3_lgg [label="Ø", color="magenta", fontcolor="magenta"];
+  lev3_lge [label="5", color="red", fontcolor="red"];
+  lev3_lgl [label="4", color="blue", fontcolor="blue"];
+
+  lev3_leg [label="6", color="red", fontcolor="red"];
+  lev3_lee [label="8", color="red", fontcolor="red"];
+  lev3_lel [label="7", color="red", fontcolor="red"];
+
+  lev3_llg [label="2", color="blue", fontcolor="blue"];
+  lev3_lle [label="3", color="blue", fontcolor="blue"];
+  lev3_lll [label="1", color="blue", fontcolor="blue"];
 
   start -> lev1_e;
   lev1_g -> lev2_ge;
